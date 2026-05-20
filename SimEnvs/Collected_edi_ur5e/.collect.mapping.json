@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/home/gstrazds/data/EDI/SimEnvs/edi_ur5e.usd",
+            "source_hash": "d711073b7fcd97704abdb8a49b70e6f53ca8fcd6",
+            "target_url": "./edi_ur5e.usd",
+            "target_hash": "474c9f55b59b211f696257ce7e8e7c9fc19ef4c7"
+        }
+    ]
+}

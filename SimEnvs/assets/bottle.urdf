@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<robot name="bottle">
+    <link name="bottle_link">
+        <contact>
+            <friction_anchor/>
+            <!--<stiffness value="30000.0"/>
+            <damping value="1000.0"/>-->
+            <lateral_friction value="1.0"/>
+            <rolling_friction value="0.0001"/>
+            <inertia_scaling value="1.0"/>
+            <!--spinning_friction value="0.0"/>
+            <lateral_friction value="0.0"/-->
+        </contact>
+        <inertial>
+            <origin rpy="0 0 0" xyz="0 0 0" /> <!---0.06117"/-->
+
+            <mass value="0.017"/>
+            <inertia ixx="1.9125e-6" ixy="0.0" ixz="0.0" iyy="1.9125e-6" iyz="0.0" izz="3.825e-6"/>
+            <!--Calculated by ChatGPT for hollow tube with radius .015 h=0.12 mass=0.017  and walls of negligible thickness -->
+            <!--inertia ixx="0.000152" ixy="0.0" ixz="0.0" iyy="0.000152" iyz="0.0" izz="0.000005"/-->
+            <!--Solid cylinder with radius .01 h=0.134 mass=0.1 : xx=zz=0.000152 zz=0.000005 -->
+        </inertial>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0" /> <!---0.06117"/-->
+            <geometry>
+                <mesh filename="bottle_CoM_origin.stl" scale="1.0 1.0 1.0"/> 
+            </geometry>
+            <material name="Green">
+                <color rgba="0.0 1.0 0.0 1.0"/> 
+            </material>
+        </visual>
+        <collision>
+            <origin rpy="0 0 0" xyz="0 0 0" /> <!---0.06117"/-->
+
+            <geometry>
+                <mesh filename="bottle_CoM_origin.stl" scale="1.0 1.0 1.0"/> 
+            </geometry>
+        </collision>
+   </link>
+</robot>

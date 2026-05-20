@@ -1,0 +1,453 @@
+{
+  "cube": {
+    "grasp_height": 0.5,
+    "rest_height": 0.50274658203125,
+    "top_surface_height": 0.49725341796875,
+    "local_half_extents": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "needs_aabb_scale_correction": true
+  },
+  "disc": {
+    "grasp_height": 0.5,
+    "rest_height": 0.50274658203125,
+    "top_surface_height": 0.49725341796875,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      0.5
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "fixed_disc": {
+    "grasp_height": 0.5,
+    "rest_height": 0.5,
+    "top_surface_height": 0.5,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      0.5
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "ball": {
+    "grasp_height": 1.0,
+    "rest_height": 1.00274658203125,
+    "top_surface_height": 0.99725341796875,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "cylinder": {
+    "grasp_height": 0.5,
+    "rest_height": 0.50274658203125,
+    "top_surface_height": 0.49725341796875,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      0.5
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "capsule": {
+    "grasp_height": 0.5,
+    "rest_height": 0.50274658203125,
+    "top_surface_height": 0.49725341796875,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      0.5
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "cone": {
+    "grasp_height": 0.5,
+    "rest_height": 0.50274658203125,
+    "top_surface_height": 0.49725341796875,
+    "local_half_extents": [
+      1.0,
+      1.0,
+      0.5
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "rect": {
+    "grasp_height": 0.5,
+    "rest_height": 0.5,
+    "top_surface_height": 0.5,
+    "local_half_extents": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "needs_aabb_scale_correction": true
+  },
+  "marker": {
+    "grasp_height": 0.5,
+    "rest_height": 0.5,
+    "top_surface_height": 0.5,
+    "local_half_extents": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "needs_aabb_scale_correction": true
+  },
+  "madara_pad": {
+    "grasp_height": 0.037500008956543596,
+    "rest_height": 7.482274355652407e-09,
+    "top_surface_height": 0.07500001043081284,
+    "local_half_extents": [
+      0.05999999679625034,
+      0.03500000387430191,
+      0.037500008956543596
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_pad_red": {
+    "grasp_height": 0.037500008956543596,
+    "rest_height": 7.482274355652407e-09,
+    "top_surface_height": 0.07500001043081284,
+    "local_half_extents": [
+      0.05999999679625034,
+      0.03500000387430191,
+      0.037500008956543596
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_pad_black": {
+    "grasp_height": 0.037500008956543596,
+    "rest_height": 7.482274355652407e-09,
+    "top_surface_height": 0.07500001043081284,
+    "local_half_extents": [
+      0.05999999679625034,
+      0.03500000387430191,
+      0.037500008956543596
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_pad_green": {
+    "grasp_height": 0.037500008956543596,
+    "rest_height": 7.482274355652407e-09,
+    "top_surface_height": 0.07500001043081284,
+    "local_half_extents": [
+      0.05999999679625034,
+      0.03500000387430191,
+      0.037500008956543596
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_pad_blue": {
+    "grasp_height": 0.037500008956543596,
+    "rest_height": 7.482274355652407e-09,
+    "top_surface_height": 0.07500001043081284,
+    "local_half_extents": [
+      0.05999999679625034,
+      0.03500000387430191,
+      0.037500008956543596
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "madara_bottle": {
+    "grasp_height": 0.0675126351416111,
+    "rest_height": 0.06294623762369156,
+    "top_surface_height": 0.07207903265953064,
+    "local_half_extents": [
+      0.017421514727175236,
+      0.017487289384007454,
+      0.0675126351416111
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_bottle_red": {
+    "grasp_height": 0.0675126351416111,
+    "rest_height": 0.06294623762369156,
+    "top_surface_height": 0.07207903265953064,
+    "local_half_extents": [
+      0.017421514727175236,
+      0.017487289384007454,
+      0.0675126351416111
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_bottle_green": {
+    "grasp_height": 0.0675126351416111,
+    "rest_height": 0.06294623762369156,
+    "top_surface_height": 0.07207903265953064,
+    "local_half_extents": [
+      0.017421514727175236,
+      0.017487289384007454,
+      0.0675126351416111
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_bottle_blue": {
+    "grasp_height": 0.0675126351416111,
+    "rest_height": 0.06294623762369156,
+    "top_surface_height": 0.07207903265953064,
+    "local_half_extents": [
+      0.017421514727175236,
+      0.017487289384007454,
+      0.0675126351416111
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "m_bottle_white": {
+    "grasp_height": 0.0675126351416111,
+    "rest_height": 0.06294623762369156,
+    "top_surface_height": 0.07207903265953064,
+    "local_half_extents": [
+      0.017421514727175236,
+      0.017487289384007454,
+      0.0675126351416111
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "soup_can": {
+    "grasp_height": 0.03385712905547478,
+    "rest_height": 0.03385759993215798,
+    "top_surface_height": 0.03385665817879158,
+    "local_half_extents": [
+      0.03382968946181819,
+      0.050927499586474134,
+      0.03385712905547478
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "cracker_box": {
+    "grasp_height": 0.035899998339265826,
+    "rest_height": 0.035899998339265604,
+    "top_surface_height": 0.03589999833926605,
+    "local_half_extents": [
+      0.08201800163050166,
+      0.10671850442770481,
+      0.035899998339265826
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "sugar_box": {
+    "grasp_height": 0.02256706902607397,
+    "rest_height": 0.022567469569277687,
+    "top_surface_height": 0.022566668482870256,
+    "local_half_extents": [
+      0.04633866444963175,
+      0.08812672894909834,
+      0.02256706902607397
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "mustard_bottle": {
+    "grasp_height": 0.02912446910609723,
+    "rest_height": 0.02912422830333794,
+    "top_surface_height": 0.029124709908856516,
+    "local_half_extents": [
+      0.04801207911941319,
+      0.0956504991132654,
+      0.02912446910609723
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "mug_black": {
+    "grasp_height": 4.595005035400391,
+    "rest_height": 0.0,
+    "top_surface_height": 9.190010070800781,
+    "local_half_extents": [
+      4.624977111816406,
+      6.825382232666016,
+      4.595005035400391
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "mug_black_green": {
+    "grasp_height": 4.5484466552734375,
+    "rest_height": 0.0,
+    "top_surface_height": 9.096893310546875,
+    "local_half_extents": [
+      4.615795135498047,
+      6.356193542480469,
+      4.5484466552734375
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "mug_yellow": {
+    "grasp_height": 5.358417510986328,
+    "rest_height": 0.0,
+    "top_surface_height": 10.716835021972656,
+    "local_half_extents": [
+      4.446496963500977,
+      6.385662078857422,
+      5.358417510986328
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "mug_blue": {
+    "grasp_height": 5.506488800048828,
+    "rest_height": 0.0,
+    "top_surface_height": 11.012977600097656,
+    "local_half_extents": [
+      4.440391540527344,
+      6.377574920654297,
+      5.506488800048828
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "factory_bolt_m16": {
+    "grasp_height": 0.017500000074505806,
+    "rest_height": 0.0,
+    "top_surface_height": 0.03500000014901161,
+    "local_half_extents": [
+      0.012000000104308128,
+      0.013856000266969204,
+      0.017500000074505806
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "gear_large": {
+    "grasp_height": 0.012499999720603228,
+    "rest_height": -0.00227463711053133,
+    "top_surface_height": 0.027274636551737785,
+    "local_half_extents": [
+      0.030975591274909675,
+      0.030975600704550743,
+      0.012499999720603228
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "gear_medium": {
+    "grasp_height": 0.012499999720603228,
+    "rest_height": -0.00227463711053133,
+    "top_surface_height": 0.027274636551737785,
+    "local_half_extents": [
+      0.0209616816136986,
+      0.02096170000731945,
+      0.012499999720603228
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "gear_small": {
+    "grasp_height": 0.012499999720603228,
+    "rest_height": -0.00227463711053133,
+    "top_surface_height": 0.027274636551737785,
+    "local_half_extents": [
+      0.010913500562310219,
+      0.010913499630987644,
+      0.012499999720603228
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "gear_base": {
+    "grasp_height": 0.012500000186264515,
+    "rest_height": 0.0,
+    "top_surface_height": 0.02500000037252903,
+    "local_half_extents": [
+      0.07500000298023224,
+      0.03750000149011612,
+      0.012500000186264515
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "factory_hole_8mm": {
+    "grasp_height": 0.014000000883873653,
+    "rest_height": 0.025000001057099652,
+    "top_surface_height": 0.0030000007106476545,
+    "local_half_extents": [
+      0.01999999955297227,
+      0.02000000003216474,
+      0.014000000883873653
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "factory_peg_8mm": {
+    "grasp_height": 0.0250000005092037,
+    "rest_height": 0.05272488682228449,
+    "top_surface_height": -0.0027248858038770862,
+    "local_half_extents": [
+      0.003992999903864813,
+      0.003993000759571257,
+      0.0250000005092037
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "nut_m16_yellow": {
+    "grasp_height": 0.006500000134110451,
+    "rest_height": -0.007274875417351723,
+    "top_surface_height": 0.020274875685572624,
+    "local_half_extents": [
+      0.012000000104308128,
+      0.013856000266969204,
+      0.006500000134110451
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "nut_m16_green": {
+    "grasp_height": 0.006514678569165433,
+    "rest_height": 0.0027489436126870714,
+    "top_surface_height": 0.010280413525643795,
+    "local_half_extents": [
+      0.015000000000000568,
+      0.015,
+      0.006514678569165433
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "KLT_Bin": {
+    "grasp_height": 6.751150158047675,
+    "rest_height": 6.745132357925452,
+    "top_surface_height": 6.757167958169898,
+    "local_half_extents": [
+      9.000000286102292,
+      14.800000667572025,
+      6.751150158047675
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "sorting_bin_blue": {
+    "grasp_height": 0.025233758804757533,
+    "rest_height": 0.002746582413830634,
+    "top_surface_height": 0.04772093519568443,
+    "local_half_extents": [
+      0.10018353164196014,
+      0.12499834597110748,
+      0.025233758804757533
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "sorting_bin_black": {
+    "grasp_height": 0.025233758804757533,
+    "rest_height": 0.002746582413830634,
+    "top_surface_height": 0.04772093519568443,
+    "local_half_extents": [
+      0.10018353164196014,
+      0.12499834597110748,
+      0.025233758804757533
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "sorting_beaker_red": {
+    "grasp_height": 0.05010557189583764,
+    "rest_height": 0.0027465823292729397,
+    "top_surface_height": 0.09746456146240234,
+    "local_half_extents": [
+      0.03252768516540527,
+      0.03510844707489014,
+      0.05010557189583764
+    ],
+    "needs_aabb_scale_correction": false
+  },
+  "sorting_bowl_yellow": {
+    "grasp_height": 0.02499999850988388,
+    "rest_height": 0.0027480125427246094,
+    "top_surface_height": 0.04725198447704315,
+    "local_half_extents": [
+      0.06000000797212124,
+      0.06000002287328243,
+      0.02499999850988388
+    ],
+    "needs_aabb_scale_correction": false
+  }
+}

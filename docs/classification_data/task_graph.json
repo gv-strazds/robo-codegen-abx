@@ -1,0 +1,640 @@
+{
+  "class_edges": [
+    {
+      "from": "C01",
+      "to": "C06"
+    },
+    {
+      "from": "C01",
+      "to": "C09"
+    },
+    {
+      "from": "C01",
+      "to": "C11"
+    },
+    {
+      "from": "C02",
+      "to": "C05"
+    },
+    {
+      "from": "C04",
+      "to": "C10"
+    },
+    {
+      "from": "C09",
+      "to": "C12"
+    },
+    {
+      "from": "C13",
+      "to": "C18"
+    },
+    {
+      "from": "C14",
+      "to": "C17"
+    },
+    {
+      "from": "C15",
+      "to": "C16"
+    },
+    {
+      "from": "C21",
+      "to": "C24"
+    }
+  ],
+  "class_of_task": {
+    "TableTask1v2": "C06",
+    "TableTask2v2": "C00",
+    "TableTask3Curobo": "C01",
+    "TableTask3b2": "C09",
+    "TableTask3c2": "C12",
+    "TableTask3v2": "C01",
+    "TableTask4v2": "C02",
+    "TableTask5v2": "C03",
+    "TableTaskBottles2": "C10",
+    "TableTaskBottlesToConveyor2": "C26",
+    "TableTaskBottlesToConveyor2x": "C26",
+    "TableTaskCartToConveyor2": "C19",
+    "TableTaskColorBinSort2": "C18",
+    "TableTaskColorCircle2": "C05",
+    "TableTaskColorShapes2": "C13",
+    "TableTaskColors2": "C01",
+    "TableTaskConveyorColorStacks2": "C07",
+    "TableTaskConveyorSort2": "C16",
+    "TableTaskConveyorTypeSort2": "C23",
+    "TableTaskCrackerBoxes2": "C04",
+    "TableTaskCrackerCircle2": "C17",
+    "TableTaskIncrementalTargets2": "C08",
+    "TableTaskLayeredCircle2": "C14",
+    "TableTaskLayeredCubes2": "C11",
+    "TableTaskMixedCircle2": "C25",
+    "TableTaskMixedPacking2": "C24",
+    "TableTaskShapeSortBoxes2": "C15",
+    "TableTaskSortAndStack2": "C20",
+    "TableTaskSoupCanPacking2": "C21",
+    "TableTaskSoupCans2": "C22"
+  },
+  "classes": {
+    "C00": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "pick:dropzone"
+      ],
+      "members": [
+        "TableTask2v2"
+      ]
+    },
+    "C01": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "pick:bin"
+      ],
+      "members": [
+        "TableTask3Curobo",
+        "TableTask3v2",
+        "TableTaskColors2"
+      ]
+    },
+    "C02": {
+      "features": [
+        "asset:primitive",
+        "dst:circle",
+        "pick:bin"
+      ],
+      "members": [
+        "TableTask4v2"
+      ]
+    },
+    "C03": {
+      "features": [
+        "asset:primitive",
+        "dst:circle",
+        "pick:dropzone"
+      ],
+      "members": [
+        "TableTask5v2"
+      ]
+    },
+    "C04": {
+      "features": [
+        "asset:usd",
+        "dst:grid",
+        "pick:bin"
+      ],
+      "members": [
+        "TableTaskCrackerBoxes2"
+      ]
+    },
+    "C05": {
+      "features": [
+        "asset:primitive",
+        "dst:circle",
+        "pick:bin",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskColorCircle2"
+      ]
+    },
+    "C06": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "gen:custom",
+        "pick:bin",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTask1v2"
+      ]
+    },
+    "C07": {
+      "features": [
+        "asset:primitive",
+        "gen:conveyor",
+        "pick:conveyor",
+        "scene:stacking_source",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskConveyorColorStacks2"
+      ]
+    },
+    "C08": {
+      "features": [
+        "asset:primitive",
+        "dst:markers",
+        "dyn:pick_incremental",
+        "dyn:target_incremental",
+        "pick:bin"
+      ],
+      "members": [
+        "TableTaskIncrementalTargets2"
+      ]
+    },
+    "C09": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "pick:bin",
+        "verify:custom_spatial_check",
+        "verify:proximity_check",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTask3b2"
+      ]
+    },
+    "C10": {
+      "features": [
+        "asset:usd",
+        "dst:grid",
+        "pick:bin",
+        "verify:custom_spatial_check",
+        "verify:is_within",
+        "verify:vertical_check"
+      ],
+      "members": [
+        "TableTaskBottles2"
+      ]
+    },
+    "C11": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "gen:layered",
+        "pick:bin",
+        "pick:layered_source",
+        "scene:stacking_source"
+      ],
+      "members": [
+        "TableTaskLayeredCubes2"
+      ]
+    },
+    "C12": {
+      "features": [
+        "asset:primitive",
+        "dst:grid",
+        "pick:bin",
+        "pick:cart",
+        "verify:custom_spatial_check",
+        "verify:proximity_check",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTask3c2"
+      ]
+    },
+    "C13": {
+      "features": [
+        "asset:primitive",
+        "dst:boxes_or_bins",
+        "gen:conveyor",
+        "gen:custom",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment"
+      ],
+      "members": [
+        "TableTaskColorShapes2"
+      ]
+    },
+    "C14": {
+      "features": [
+        "asset:usd",
+        "dst:stack",
+        "gen:circular",
+        "gen:layered",
+        "pick:circle",
+        "pick:layered_source",
+        "scene:stacking_source"
+      ],
+      "members": [
+        "TableTaskLayeredCircle2"
+      ]
+    },
+    "C15": {
+      "features": [
+        "asset:primitive",
+        "dst:boxes_or_bins",
+        "dst:on_cart",
+        "gen:conveyor",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment"
+      ],
+      "members": [
+        "TableTaskShapeSortBoxes2"
+      ]
+    },
+    "C16": {
+      "features": [
+        "asset:primitive",
+        "dst:boxes_or_bins",
+        "dst:on_cart",
+        "gen:conveyor",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskConveyorSort2"
+      ]
+    },
+    "C17": {
+      "features": [
+        "asset:usd",
+        "dst:stack",
+        "gen:circular",
+        "gen:layered",
+        "pick:circle",
+        "pick:layered_source",
+        "scene:stacking_source",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskCrackerCircle2"
+      ]
+    },
+    "C18": {
+      "features": [
+        "asset:primitive",
+        "dst:boxes_or_bins",
+        "dyn:pick_incremental",
+        "dyn:random_pick_count",
+        "gen:conveyor",
+        "gen:custom",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment"
+      ],
+      "members": [
+        "TableTaskColorBinSort2"
+      ]
+    },
+    "C19": {
+      "features": [
+        "asset:multi_or_mixed",
+        "asset:usd",
+        "dst:boxes_or_bins",
+        "dst:conveyor",
+        "gen:custom",
+        "pick:cart",
+        "verify:box_info",
+        "verify:containment",
+        "verify:placement_constraints",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskCartToConveyor2"
+      ]
+    },
+    "C20": {
+      "features": [
+        "asset:primitive",
+        "dst:boxes_or_bins",
+        "dst:stack",
+        "gen:layered",
+        "pick:bin",
+        "pick:layered_source",
+        "scene:stacking_source",
+        "verify:box_info",
+        "verify:containment",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskSortAndStack2"
+      ]
+    },
+    "C21": {
+      "features": [
+        "asset:usd",
+        "dst:boxes_or_bins",
+        "dst:on_cart",
+        "gen:conveyor",
+        "gen:custom",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment",
+        "verify:placement_constraints",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskSoupCanPacking2"
+      ]
+    },
+    "C22": {
+      "features": [
+        "asset:usd",
+        "dst:conveyor",
+        "dst:dynamic_bursts",
+        "dyn:target_incremental",
+        "gen:custom",
+        "pick:bin",
+        "scene:falloff_capture",
+        "scene:moving_conveyor",
+        "verify:custom_spatial_check",
+        "verify:vertical_check"
+      ],
+      "members": [
+        "TableTaskSoupCans2"
+      ]
+    },
+    "C23": {
+      "features": [
+        "asset:multi_or_mixed",
+        "asset:usd",
+        "dst:boxes_or_bins",
+        "dst:on_cart",
+        "dyn:pick_incremental",
+        "dyn:random_pick_count",
+        "gen:conveyor",
+        "pick:conveyor",
+        "scene:moving_conveyor",
+        "verify:box_info",
+        "verify:containment"
+      ],
+      "members": [
+        "TableTaskConveyorTypeSort2"
+      ]
+    },
+    "C24": {
+      "features": [
+        "asset:multi_or_mixed",
+        "asset:usd",
+        "dst:boxes_or_bins",
+        "dst:on_cart",
+        "gen:conveyor",
+        "gen:custom",
+        "pick:conveyor",
+        "verify:box_info",
+        "verify:containment",
+        "verify:placement_constraints",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskMixedPacking2"
+      ]
+    },
+    "C25": {
+      "features": [
+        "asset:multi_or_mixed",
+        "asset:primitive",
+        "asset:usd",
+        "dst:bin_container",
+        "dst:on_cart",
+        "gen:circular",
+        "gen:custom",
+        "pick:circle",
+        "verify:box_info",
+        "verify:containment",
+        "verify:placement_constraints",
+        "verify:virtual_targets"
+      ],
+      "members": [
+        "TableTaskMixedCircle2"
+      ]
+    },
+    "C26": {
+      "features": [
+        "asset:usd",
+        "dst:conveyor",
+        "dyn:pick_incremental",
+        "dyn:target_spatial_trigger",
+        "gen:layered",
+        "pick:bin",
+        "pick:layered_source",
+        "scene:falloff_capture",
+        "scene:moving_conveyor",
+        "scene:stacking_source",
+        "verify:custom_spatial_check",
+        "verify:is_within",
+        "verify:vertical_check"
+      ],
+      "members": [
+        "TableTaskBottlesToConveyor2",
+        "TableTaskBottlesToConveyor2x"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "from": "TableTask3Curobo",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTask3Curobo",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask3Curobo",
+      "to": "TableTaskLayeredCubes2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskLayeredCubes2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTaskColorShapes2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTaskLayeredCubes2"
+    },
+    {
+      "from": "TableTaskCrackerBoxes2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTaskLayeredCircle2",
+      "to": "TableTaskCrackerCircle2"
+    },
+    {
+      "from": "TableTaskShapeSortBoxes2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTaskMixedPacking2"
+    }
+  ],
+  "feature_universe": [
+    "asset:multi_or_mixed",
+    "asset:primitive",
+    "asset:usd",
+    "dst:bin_container",
+    "dst:boxes_or_bins",
+    "dst:circle",
+    "dst:conveyor",
+    "dst:dynamic_bursts",
+    "dst:grid",
+    "dst:markers",
+    "dst:on_cart",
+    "dst:stack",
+    "dyn:pick_incremental",
+    "dyn:random_pick_count",
+    "dyn:target_incremental",
+    "dyn:target_spatial_trigger",
+    "gen:circular",
+    "gen:conveyor",
+    "gen:custom",
+    "gen:layered",
+    "pick:bin",
+    "pick:cart",
+    "pick:circle",
+    "pick:conveyor",
+    "pick:dropzone",
+    "pick:layered_source",
+    "scene:falloff_capture",
+    "scene:moving_conveyor",
+    "scene:stacking_source",
+    "verify:box_info",
+    "verify:containment",
+    "verify:custom_spatial_check",
+    "verify:is_within",
+    "verify:placement_constraints",
+    "verify:proximity_check",
+    "verify:vertical_check",
+    "verify:virtual_targets"
+  ],
+  "feature_weights": {
+    "asset:multi_or_mixed": 2,
+    "asset:primitive": 0,
+    "asset:usd": 1,
+    "dst:bin_container": 2,
+    "dst:boxes_or_bins": 3,
+    "dst:circle": 1,
+    "dst:conveyor": 3,
+    "dst:dynamic_bursts": 4,
+    "dst:grid": 0,
+    "dst:markers": 0,
+    "dst:on_cart": 1,
+    "dst:stack": 3,
+    "dyn:pick_incremental": 2,
+    "dyn:pick_spatial_trigger": 2,
+    "dyn:random_pick_count": 1,
+    "dyn:random_target_count": 1,
+    "dyn:target_incremental": 2,
+    "dyn:target_spatial_trigger": 2,
+    "gen:circular": 1,
+    "gen:conveyor": 1,
+    "gen:custom": 3,
+    "gen:layered": 2,
+    "pick:bin": 0,
+    "pick:cart": 2,
+    "pick:circle": 1,
+    "pick:conveyor": 3,
+    "pick:dropzone": 1,
+    "pick:layered_source": 3,
+    "scene:falloff_capture": 1,
+    "scene:moving_conveyor": 3,
+    "scene:stacking_source": 2,
+    "verify:box_info": 1,
+    "verify:containment": 2,
+    "verify:custom_spatial_check": 2,
+    "verify:is_within": 1,
+    "verify:placement_constraints": 2,
+    "verify:proximity_check": 1,
+    "verify:vertical_check": 1,
+    "verify:virtual_targets": 1
+  },
+  "nodes": [
+    "TableTask1v2",
+    "TableTask2v2",
+    "TableTask3Curobo",
+    "TableTask3b2",
+    "TableTask3c2",
+    "TableTask3v2",
+    "TableTask4v2",
+    "TableTask5v2",
+    "TableTaskBottles2",
+    "TableTaskBottlesToConveyor2",
+    "TableTaskBottlesToConveyor2x",
+    "TableTaskCartToConveyor2",
+    "TableTaskColorBinSort2",
+    "TableTaskColorCircle2",
+    "TableTaskColorShapes2",
+    "TableTaskColors2",
+    "TableTaskConveyorColorStacks2",
+    "TableTaskConveyorSort2",
+    "TableTaskConveyorTypeSort2",
+    "TableTaskCrackerBoxes2",
+    "TableTaskCrackerCircle2",
+    "TableTaskIncrementalTargets2",
+    "TableTaskLayeredCircle2",
+    "TableTaskLayeredCubes2",
+    "TableTaskMixedCircle2",
+    "TableTaskMixedPacking2",
+    "TableTaskShapeSortBoxes2",
+    "TableTaskSortAndStack2",
+    "TableTaskSoupCanPacking2",
+    "TableTaskSoupCans2"
+  ]
+}

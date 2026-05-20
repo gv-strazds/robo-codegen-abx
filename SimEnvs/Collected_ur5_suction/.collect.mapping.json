@@ -1,0 +1,41 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/home/gstrazds/data/EDI/SimEnvs/ur5_suction.usd",
+            "source_hash": "6da96b4247da8a6182ab9a8593a27697c4b90141",
+            "target_url": "./ur5_suction.usd",
+            "target_hash": "4d54f4257aad30d4561395b937514843bba9ca69"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur10/grippers/short_gripper.usd",
+            "source_hash": "dc5a315c63f94d63280c53a8ab7712efec2b3cc6",
+            "target_url": "./omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur10/grippers/short_gripper.usd",
+            "target_hash": "83f4c1e2bd32b09406e5b9449408993d5e9e8522"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/ur5.usd",
+            "source_hash": "7bdf9ead1343508ab21297fdc90a486ff241d375",
+            "target_url": "./omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/ur5.usd",
+            "target_hash": "88788d5384c0621a67fe9c21ae71b2ebe1fee58e"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_base.usd",
+            "source_hash": "b1545acdceaff6426f2b2591130842c2b4da5002",
+            "target_url": "./omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_base.usd",
+            "target_hash": "b46270daa38ed544bda58fef74e03f447f910e20"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_physics.usd",
+            "source_hash": "e1f68a537967b597b99fc1775496a5f0cabc3b4e",
+            "target_url": "./omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_physics.usd",
+            "target_hash": "93546f2358af6b3a835e6088e0e40bf062ed490d"
+        },
+        {
+            "source_url": "https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_sensor.usd",
+            "source_hash": "445e76c3229f6e0c6aec7b105b52b4b95fd0faae",
+            "target_url": "./omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5/Isaac/Robots/UniversalRobots/ur5/configuration/ur5_sensor.usd",
+            "target_hash": "bf1fb7051fa9354ddd4693ca54dd19446dd16abb"
+        }
+    ]
+}

@@ -1,0 +1,233 @@
+{
+  "by_category": {
+    "1": [
+      "TableTask3v2",
+      "TableTask2v2",
+      "TableTask4v2",
+      "TableTask5v2",
+      "TableTaskColors2",
+      "TableTaskCrackerBoxes2",
+      "TableTaskColorCircle2"
+    ],
+    "2": [
+      "TableTaskIncrementalTargets2",
+      "TableTask3b2",
+      "TableTask1v2",
+      "TableTask3Curobo",
+      "TableTask3c2",
+      "TableTaskBottles2",
+      "TableTaskLayeredCubes2"
+    ],
+    "3": [
+      "TableTaskConveyorColorStacks2",
+      "TableTaskShapeSortBoxes2",
+      "TableTaskColorShapes2",
+      "TableTaskConveyorSort2",
+      "TableTaskLayeredCircle2",
+      "TableTaskColorBinSort2",
+      "TableTaskMixedCircle2"
+    ],
+    "4": [
+      "TableTaskSoupCanPacking2",
+      "TableTaskCartToConveyor2",
+      "TableTaskCrackerCircle2",
+      "TableTaskMixedPacking2",
+      "TableTaskSortAndStack2",
+      "TableTaskConveyorTypeSort2"
+    ],
+    "5": [
+      "TableTaskSoupCans2",
+      "TableTaskBottlesToConveyor2",
+      "TableTaskBottlesToConveyor2x"
+    ]
+  },
+  "by_task": {
+    "TableTask1v2": {
+      "category": 2,
+      "combined_score": 8,
+      "impl_score": 4,
+      "task_score": 4
+    },
+    "TableTask2v2": {
+      "category": 1,
+      "combined_score": 2,
+      "impl_score": 1,
+      "task_score": 1
+    },
+    "TableTask3Curobo": {
+      "category": 2,
+      "combined_score": 8,
+      "impl_score": 8,
+      "task_score": 0
+    },
+    "TableTask3b2": {
+      "category": 2,
+      "combined_score": 6,
+      "impl_score": 2,
+      "task_score": 4
+    },
+    "TableTask3c2": {
+      "category": 2,
+      "combined_score": 8,
+      "impl_score": 2,
+      "task_score": 6
+    },
+    "TableTask3v2": {
+      "category": 1,
+      "combined_score": 1,
+      "impl_score": 1,
+      "task_score": 0
+    },
+    "TableTask4v2": {
+      "category": 1,
+      "combined_score": 2,
+      "impl_score": 1,
+      "task_score": 1
+    },
+    "TableTask5v2": {
+      "category": 1,
+      "combined_score": 3,
+      "impl_score": 1,
+      "task_score": 2
+    },
+    "TableTaskBottles2": {
+      "category": 2,
+      "combined_score": 8,
+      "impl_score": 3,
+      "task_score": 5
+    },
+    "TableTaskBottlesToConveyor2": {
+      "category": 5,
+      "combined_score": 32,
+      "impl_score": 9,
+      "task_score": 23
+    },
+    "TableTaskBottlesToConveyor2x": {
+      "category": 5,
+      "combined_score": 35,
+      "impl_score": 12,
+      "task_score": 23
+    },
+    "TableTaskCartToConveyor2": {
+      "category": 4,
+      "combined_score": 23,
+      "impl_score": 3,
+      "task_score": 20
+    },
+    "TableTaskColorBinSort2": {
+      "category": 3,
+      "combined_score": 19,
+      "impl_score": 3,
+      "task_score": 16
+    },
+    "TableTaskColorCircle2": {
+      "category": 1,
+      "combined_score": 4,
+      "impl_score": 2,
+      "task_score": 2
+    },
+    "TableTaskColorShapes2": {
+      "category": 3,
+      "combined_score": 16,
+      "impl_score": 3,
+      "task_score": 13
+    },
+    "TableTaskColors2": {
+      "category": 1,
+      "combined_score": 3,
+      "impl_score": 3,
+      "task_score": 0
+    },
+    "TableTaskConveyorColorStacks2": {
+      "category": 3,
+      "combined_score": 12,
+      "impl_score": 5,
+      "task_score": 7
+    },
+    "TableTaskConveyorSort2": {
+      "category": 3,
+      "combined_score": 16,
+      "impl_score": 4,
+      "task_score": 12
+    },
+    "TableTaskConveyorTypeSort2": {
+      "category": 4,
+      "combined_score": 25,
+      "impl_score": 5,
+      "task_score": 20
+    },
+    "TableTaskCrackerBoxes2": {
+      "category": 1,
+      "combined_score": 3,
+      "impl_score": 2,
+      "task_score": 1
+    },
+    "TableTaskCrackerCircle2": {
+      "category": 4,
+      "combined_score": 23,
+      "impl_score": 9,
+      "task_score": 14
+    },
+    "TableTaskIncrementalTargets2": {
+      "category": 2,
+      "combined_score": 5,
+      "impl_score": 1,
+      "task_score": 4
+    },
+    "TableTaskLayeredCircle2": {
+      "category": 3,
+      "combined_score": 18,
+      "impl_score": 5,
+      "task_score": 13
+    },
+    "TableTaskLayeredCubes2": {
+      "category": 2,
+      "combined_score": 8,
+      "impl_score": 1,
+      "task_score": 7
+    },
+    "TableTaskMixedCircle2": {
+      "category": 3,
+      "combined_score": 19,
+      "impl_score": 2,
+      "task_score": 17
+    },
+    "TableTaskMixedPacking2": {
+      "category": 4,
+      "combined_score": 23,
+      "impl_score": 3,
+      "task_score": 20
+    },
+    "TableTaskShapeSortBoxes2": {
+      "category": 3,
+      "combined_score": 14,
+      "impl_score": 3,
+      "task_score": 11
+    },
+    "TableTaskSortAndStack2": {
+      "category": 4,
+      "combined_score": 23,
+      "impl_score": 6,
+      "task_score": 17
+    },
+    "TableTaskSoupCanPacking2": {
+      "category": 4,
+      "combined_score": 20,
+      "impl_score": 2,
+      "task_score": 18
+    },
+    "TableTaskSoupCans2": {
+      "category": 5,
+      "combined_score": 31,
+      "impl_score": 11,
+      "task_score": 20
+    }
+  },
+  "thresholds": {
+    "cat1<=": 4,
+    "cat2<=": 9,
+    "cat3<=": 19,
+    "cat4<=": 26,
+    "cat5_else": true
+  }
+}

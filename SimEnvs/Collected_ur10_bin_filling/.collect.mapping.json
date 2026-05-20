@@ -1,0 +1,41 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Environments/Grid/Materials/Textures/radialFalloffGrid_v02.png",
+            "source_hash": "ea1c048d7f58832ea9b827d6d18f0690cd403bea",
+            "target_url": "./Environments/Grid/Materials/Textures/radialFalloffGrid_v02.png",
+            "target_hash": "ed533e1e9dd4ada2e5594535326a512fb99b0014"
+        },
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Environments/Grid/Materials/Textures/radialGrid_clrmap_50.png",
+            "source_hash": "9c0d91d33bd5417987395a5df913953e79acad32",
+            "target_url": "./Environments/Grid/Materials/Textures/radialGrid_clrmap_50.png",
+            "target_hash": "05f9bcc7196042f49f63e2fd30cc4a26a206bb28"
+        },
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Robots/UniversalRobots/ur10/grippers/long_gripper.usd",
+            "source_hash": "dc5b55fc49e813c20d8fdb3e0dd29ba049c40b7a",
+            "target_url": "./Robots/UniversalRobots/ur10/grippers/long_gripper.usd",
+            "target_hash": "e891dadc9e574331631607bb3fff984756c04a48"
+        },
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Labels_D.png",
+            "source_hash": "4c2292ae5d694f6e91c4a690c920bd8610f0534f",
+            "target_url": "./Props/KLT_Bin/Materials/Textures/FOF_Map_Labels_D.png",
+            "target_hash": "3e36227312d4dd61da221e4f43f8f0af42e3274b"
+        },
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Map_Magenta_Box_D.png",
+            "source_hash": "3ab0181018b1590fd9ceb8f85c0716d859c401b1",
+            "target_url": "./Props/KLT_Bin/Materials/Textures/FOF_Map_Magenta_Box_D.png",
+            "target_hash": "b0619120a0b8c6d7c5b3b65f94089a920e8caf05"
+        },
+        {
+            "source_url": "/data/gstrazds/isaacsim_assets/Assets/Isaac/5.0/Isaac/Props/KLT_Bin/Materials/Textures/FOF_Mesh_Labels_D.png",
+            "source_hash": "4c2292ae5d694f6e91c4a690c920bd8610f0534f",
+            "target_url": "./Props/KLT_Bin/Materials/Textures/FOF_Mesh_Labels_D.png",
+            "target_hash": "8b83d6dd88be4a4f86f62c107775add8b59c3c49"
+        }
+    ]
+}

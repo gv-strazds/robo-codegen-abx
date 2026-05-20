@@ -1,0 +1,653 @@
+{
+  "TableTask1v2": {
+    "category": 2,
+    "combined_score": 8,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 4,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "gen:custom",
+      "pick:bin",
+      "verify:virtual_targets"
+    ],
+    "task_score": 4
+  },
+  "TableTask2v2": {
+    "category": 1,
+    "combined_score": 2,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:dropzone"
+    ],
+    "task_score": 1
+  },
+  "TableTask3Curobo": {
+    "category": 2,
+    "combined_score": 8,
+    "impl_features": [
+      "planner:curobo",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tree:specialized",
+      "tuning:timeout"
+    ],
+    "impl_score": 8,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:bin"
+    ],
+    "task_score": 0
+  },
+  "TableTask3b2": {
+    "category": 2,
+    "combined_score": 6,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:bin",
+      "verify:custom_spatial_check",
+      "verify:proximity_check",
+      "verify:virtual_targets"
+    ],
+    "task_score": 4
+  },
+  "TableTask3c2": {
+    "category": 2,
+    "combined_score": 8,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:bin",
+      "pick:cart",
+      "verify:custom_spatial_check",
+      "verify:proximity_check",
+      "verify:virtual_targets"
+    ],
+    "task_score": 6
+  },
+  "TableTask3v2": {
+    "category": 1,
+    "combined_score": 1,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:bin"
+    ],
+    "task_score": 0
+  },
+  "TableTask4v2": {
+    "category": 1,
+    "combined_score": 2,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:circle",
+      "pick:bin"
+    ],
+    "task_score": 1
+  },
+  "TableTask5v2": {
+    "category": 1,
+    "combined_score": 3,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:circle",
+      "pick:dropzone"
+    ],
+    "task_score": 2
+  },
+  "TableTaskBottles2": {
+    "category": 2,
+    "combined_score": 8,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:usd",
+      "dst:grid",
+      "pick:bin",
+      "verify:custom_spatial_check",
+      "verify:is_within",
+      "verify:vertical_check"
+    ],
+    "task_score": 5
+  },
+  "TableTaskBottlesToConveyor2": {
+    "category": 5,
+    "combined_score": 32,
+    "impl_features": [
+      "policy:target_reachable_fn",
+      "strat:dynamic_selection",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:pick_approach_p"
+    ],
+    "impl_score": 9,
+    "task_features": [
+      "asset:usd",
+      "dst:conveyor",
+      "dyn:pick_incremental",
+      "dyn:target_spatial_trigger",
+      "gen:layered",
+      "pick:bin",
+      "pick:layered_source",
+      "scene:falloff_capture",
+      "scene:moving_conveyor",
+      "scene:stacking_source",
+      "verify:custom_spatial_check",
+      "verify:is_within",
+      "verify:vertical_check"
+    ],
+    "task_score": 23
+  },
+  "TableTaskBottlesToConveyor2x": {
+    "category": 5,
+    "combined_score": 35,
+    "impl_features": [
+      "policy:target_reachable_fn",
+      "strat:dynamic_selection",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tree:specialized",
+      "tuning:pick_approach_p"
+    ],
+    "impl_score": 12,
+    "task_features": [
+      "asset:usd",
+      "dst:conveyor",
+      "dyn:pick_incremental",
+      "dyn:target_spatial_trigger",
+      "gen:layered",
+      "pick:bin",
+      "pick:layered_source",
+      "scene:falloff_capture",
+      "scene:moving_conveyor",
+      "scene:stacking_source",
+      "verify:custom_spatial_check",
+      "verify:is_within",
+      "verify:vertical_check"
+    ],
+    "task_score": 23
+  },
+  "TableTaskCartToConveyor2": {
+    "category": 4,
+    "combined_score": 23,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:multi_or_mixed",
+      "asset:usd",
+      "dst:boxes_or_bins",
+      "dst:conveyor",
+      "gen:custom",
+      "pick:cart",
+      "verify:box_info",
+      "verify:containment",
+      "verify:placement_constraints",
+      "verify:virtual_targets"
+    ],
+    "task_score": 20
+  },
+  "TableTaskColorBinSort2": {
+    "category": 3,
+    "combined_score": 19,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:primitive",
+      "dst:boxes_or_bins",
+      "dyn:pick_incremental",
+      "dyn:random_pick_count",
+      "gen:conveyor",
+      "gen:custom",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment"
+    ],
+    "task_score": 16
+  },
+  "TableTaskColorCircle2": {
+    "category": 1,
+    "combined_score": 4,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:primitive",
+      "dst:circle",
+      "pick:bin",
+      "verify:virtual_targets"
+    ],
+    "task_score": 2
+  },
+  "TableTaskColorShapes2": {
+    "category": 3,
+    "combined_score": 16,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:primitive",
+      "dst:boxes_or_bins",
+      "gen:conveyor",
+      "gen:custom",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment"
+    ],
+    "task_score": 13
+  },
+  "TableTaskColors2": {
+    "category": 1,
+    "combined_score": 3,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "pick:bin"
+    ],
+    "task_score": 0
+  },
+  "TableTaskConveyorColorStacks2": {
+    "category": 3,
+    "combined_score": 12,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "strat:stacking_aware",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 5,
+    "task_features": [
+      "asset:primitive",
+      "gen:conveyor",
+      "pick:conveyor",
+      "scene:stacking_source",
+      "verify:virtual_targets"
+    ],
+    "task_score": 7
+  },
+  "TableTaskConveyorSort2": {
+    "category": 3,
+    "combined_score": 16,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 4,
+    "task_features": [
+      "asset:primitive",
+      "dst:boxes_or_bins",
+      "dst:on_cart",
+      "gen:conveyor",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment",
+      "verify:virtual_targets"
+    ],
+    "task_score": 12
+  },
+  "TableTaskConveyorTypeSort2": {
+    "category": 4,
+    "combined_score": 25,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height",
+      "tuning:pick_approach_p"
+    ],
+    "impl_score": 5,
+    "task_features": [
+      "asset:multi_or_mixed",
+      "asset:usd",
+      "dst:boxes_or_bins",
+      "dst:on_cart",
+      "dyn:pick_incremental",
+      "dyn:random_pick_count",
+      "gen:conveyor",
+      "pick:conveyor",
+      "scene:moving_conveyor",
+      "verify:box_info",
+      "verify:containment"
+    ],
+    "task_score": 20
+  },
+  "TableTaskCrackerBoxes2": {
+    "category": 1,
+    "combined_score": 3,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:usd",
+      "dst:grid",
+      "pick:bin"
+    ],
+    "task_score": 1
+  },
+  "TableTaskCrackerCircle2": {
+    "category": 4,
+    "combined_score": 23,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "strat:stacking_aware",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height",
+      "tuning:place_approach",
+      "tuning:place_hover",
+      "tuning:startup_delay"
+    ],
+    "impl_score": 9,
+    "task_features": [
+      "asset:usd",
+      "dst:stack",
+      "gen:circular",
+      "gen:layered",
+      "pick:circle",
+      "pick:layered_source",
+      "scene:stacking_source",
+      "verify:virtual_targets"
+    ],
+    "task_score": 14
+  },
+  "TableTaskIncrementalTargets2": {
+    "category": 2,
+    "combined_score": 5,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:markers",
+      "dyn:pick_incremental",
+      "dyn:target_incremental",
+      "pick:bin"
+    ],
+    "task_score": 4
+  },
+  "TableTaskLayeredCircle2": {
+    "category": 3,
+    "combined_score": 18,
+    "impl_features": [
+      "strat:sequential",
+      "strat:stacking_aware",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height"
+    ],
+    "impl_score": 5,
+    "task_features": [
+      "asset:usd",
+      "dst:stack",
+      "gen:circular",
+      "gen:layered",
+      "pick:circle",
+      "pick:layered_source",
+      "scene:stacking_source"
+    ],
+    "task_score": 13
+  },
+  "TableTaskLayeredCubes2": {
+    "category": 2,
+    "combined_score": 8,
+    "impl_features": [
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 1,
+    "task_features": [
+      "asset:primitive",
+      "dst:grid",
+      "gen:layered",
+      "pick:bin",
+      "pick:layered_source",
+      "scene:stacking_source"
+    ],
+    "task_score": 7
+  },
+  "TableTaskMixedCircle2": {
+    "category": 3,
+    "combined_score": 19,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:multi_or_mixed",
+      "asset:primitive",
+      "asset:usd",
+      "dst:bin_container",
+      "dst:on_cart",
+      "gen:circular",
+      "gen:custom",
+      "pick:circle",
+      "verify:box_info",
+      "verify:containment",
+      "verify:placement_constraints",
+      "verify:virtual_targets"
+    ],
+    "task_score": 17
+  },
+  "TableTaskMixedPacking2": {
+    "category": 4,
+    "combined_score": 23,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:multi_or_mixed",
+      "asset:usd",
+      "dst:boxes_or_bins",
+      "dst:on_cart",
+      "gen:conveyor",
+      "gen:custom",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment",
+      "verify:placement_constraints",
+      "verify:virtual_targets"
+    ],
+    "task_score": 20
+  },
+  "TableTaskShapeSortBoxes2": {
+    "category": 3,
+    "combined_score": 14,
+    "impl_features": [
+      "strat:attribute_routing",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 3,
+    "task_features": [
+      "asset:primitive",
+      "dst:boxes_or_bins",
+      "dst:on_cart",
+      "gen:conveyor",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment"
+    ],
+    "task_score": 11
+  },
+  "TableTaskSortAndStack2": {
+    "category": 4,
+    "combined_score": 23,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "strat:stacking_aware",
+      "tree:any",
+      "tree:cortex",
+      "tuning:ee_height"
+    ],
+    "impl_score": 6,
+    "task_features": [
+      "asset:primitive",
+      "dst:boxes_or_bins",
+      "dst:stack",
+      "gen:layered",
+      "pick:bin",
+      "pick:layered_source",
+      "scene:stacking_source",
+      "verify:box_info",
+      "verify:containment",
+      "verify:virtual_targets"
+    ],
+    "task_score": 17
+  },
+  "TableTaskSoupCanPacking2": {
+    "category": 4,
+    "combined_score": 20,
+    "impl_features": [
+      "policy:virtual_targets",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex"
+    ],
+    "impl_score": 2,
+    "task_features": [
+      "asset:usd",
+      "dst:boxes_or_bins",
+      "dst:on_cart",
+      "gen:conveyor",
+      "gen:custom",
+      "pick:conveyor",
+      "verify:box_info",
+      "verify:containment",
+      "verify:placement_constraints",
+      "verify:virtual_targets"
+    ],
+    "task_score": 18
+  },
+  "TableTaskSoupCans2": {
+    "category": 5,
+    "combined_score": 31,
+    "impl_features": [
+      "policy:target_reachable_fn",
+      "strat:dynamic_selection",
+      "strat:sequential",
+      "tree:any",
+      "tree:cortex",
+      "tuning:descent_thresh",
+      "tuning:pick_posture",
+      "tuning:place_posture"
+    ],
+    "impl_score": 11,
+    "task_features": [
+      "asset:usd",
+      "dst:conveyor",
+      "dst:dynamic_bursts",
+      "dyn:target_incremental",
+      "gen:custom",
+      "pick:bin",
+      "scene:falloff_capture",
+      "scene:moving_conveyor",
+      "verify:custom_spatial_check",
+      "verify:vertical_check"
+    ],
+    "task_score": 20
+  }
+}

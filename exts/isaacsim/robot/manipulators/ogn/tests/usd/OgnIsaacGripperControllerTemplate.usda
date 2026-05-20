@@ -1,0 +1,61 @@
+#usda 1.0
+(
+    doc ="""Generated from node description file OgnIsaacGripperController.ogn
+Contains templates for node types found in that file."""
+)
+
+def OmniGraph "TestGraph"
+{
+    token evaluator:type = "push"
+    int2 fileFormatVersion = (1, 3)
+    token flatCacheBacking = "Shared"
+    token pipelineStage = "pipelineStageSimulation"
+
+    def OmniGraphNode "Template_isaacsim_robot_manipulators_IsaacGripperController" (
+        docs="""Isaac Sim Gripper Controller Node"""
+    )
+    {
+        token node:type = "isaacsim.robot.manipulators.IsaacGripperController"
+        int node:typeVersion = 1
+
+        # 10 attributes
+        custom rel inputs:articulationRootPrim (
+            docs="""Articulation root prim of the robot"""
+        )
+        custom uint inputs:close (
+            docs="""close gripper call"""
+        )
+        custom double[] inputs:closePosition (
+            docs="""closing position for the gripper joints, will use the joint limit if not provided"""
+        )
+        custom uint inputs:execIn (
+            docs="""tick"""
+        )
+        custom rel inputs:gripperPrim (
+            docs="""The gripper's root link prim"""
+        )
+        custom double[] inputs:gripperSpeed = [] (
+            docs="""gripper speed (distance per frame)"""
+        )
+        custom token[] inputs:jointNames = [] (
+            docs="""gripper joint names"""
+        )
+        custom uint inputs:open (
+            docs="""open gripper call"""
+        )
+        custom double[] inputs:openPosition (
+            docs="""maximum opening position for the gripper joints, will use the joint limit if not provided"""
+        )
+        custom uint inputs:stop (
+            docs="""stop gripper call"""
+        )
+
+        # 2 attributes
+        custom token[] outputs:jointNames (
+            docs="""gripper joint names"""
+        )
+        custom double[] outputs:positionCommands (
+            docs="""joint commands to the articulation controller"""
+        )
+    }
+}

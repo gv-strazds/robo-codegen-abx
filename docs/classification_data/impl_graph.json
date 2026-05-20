@@ -1,0 +1,933 @@
+{
+  "class_edges": [
+    {
+      "from": "C00",
+      "to": "C01"
+    },
+    {
+      "from": "C00",
+      "to": "C02"
+    },
+    {
+      "from": "C00",
+      "to": "C03"
+    },
+    {
+      "from": "C00",
+      "to": "C08"
+    },
+    {
+      "from": "C00",
+      "to": "C09"
+    },
+    {
+      "from": "C00",
+      "to": "C13"
+    },
+    {
+      "from": "C01",
+      "to": "C04"
+    },
+    {
+      "from": "C01",
+      "to": "C05"
+    },
+    {
+      "from": "C01",
+      "to": "C06"
+    },
+    {
+      "from": "C02",
+      "to": "C04"
+    },
+    {
+      "from": "C02",
+      "to": "C10"
+    },
+    {
+      "from": "C03",
+      "to": "C05"
+    },
+    {
+      "from": "C03",
+      "to": "C07"
+    },
+    {
+      "from": "C03",
+      "to": "C10"
+    },
+    {
+      "from": "C05",
+      "to": "C11"
+    },
+    {
+      "from": "C06",
+      "to": "C11"
+    },
+    {
+      "from": "C07",
+      "to": "C11"
+    },
+    {
+      "from": "C09",
+      "to": "C12"
+    },
+    {
+      "from": "C11",
+      "to": "C14"
+    }
+  ],
+  "class_of_task": {
+    "TableTask1v2": "C04",
+    "TableTask2v2": "C00",
+    "TableTask3Curobo": "C08",
+    "TableTask3b2": "C01",
+    "TableTask3c2": "C01",
+    "TableTask3v2": "C00",
+    "TableTask4v2": "C00",
+    "TableTask5v2": "C00",
+    "TableTaskBottles2": "C02",
+    "TableTaskBottlesToConveyor2": "C09",
+    "TableTaskBottlesToConveyor2x": "C12",
+    "TableTaskCartToConveyor2": "C05",
+    "TableTaskColorBinSort2": "C02",
+    "TableTaskColorCircle2": "C01",
+    "TableTaskColorShapes2": "C02",
+    "TableTaskColors2": "C02",
+    "TableTaskConveyorColorStacks2": "C06",
+    "TableTaskConveyorSort2": "C04",
+    "TableTaskConveyorTypeSort2": "C10",
+    "TableTaskCrackerBoxes2": "C03",
+    "TableTaskCrackerCircle2": "C14",
+    "TableTaskIncrementalTargets2": "C00",
+    "TableTaskLayeredCircle2": "C07",
+    "TableTaskLayeredCubes2": "C00",
+    "TableTaskMixedCircle2": "C01",
+    "TableTaskMixedPacking2": "C05",
+    "TableTaskShapeSortBoxes2": "C02",
+    "TableTaskSortAndStack2": "C11",
+    "TableTaskSoupCanPacking2": "C01",
+    "TableTaskSoupCans2": "C13"
+  },
+  "classes": {
+    "C00": {
+      "features": [
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex"
+      ],
+      "members": [
+        "TableTask2v2",
+        "TableTask3v2",
+        "TableTask4v2",
+        "TableTask5v2",
+        "TableTaskIncrementalTargets2",
+        "TableTaskLayeredCubes2"
+      ]
+    },
+    "C01": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex"
+      ],
+      "members": [
+        "TableTask3b2",
+        "TableTask3c2",
+        "TableTaskColorCircle2",
+        "TableTaskMixedCircle2",
+        "TableTaskSoupCanPacking2"
+      ]
+    },
+    "C02": {
+      "features": [
+        "strat:attribute_routing",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex"
+      ],
+      "members": [
+        "TableTaskBottles2",
+        "TableTaskColorBinSort2",
+        "TableTaskColorShapes2",
+        "TableTaskColors2",
+        "TableTaskShapeSortBoxes2"
+      ]
+    },
+    "C03": {
+      "features": [
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height"
+      ],
+      "members": [
+        "TableTaskCrackerBoxes2"
+      ]
+    },
+    "C04": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:attribute_routing",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex"
+      ],
+      "members": [
+        "TableTask1v2",
+        "TableTaskConveyorSort2"
+      ]
+    },
+    "C05": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height"
+      ],
+      "members": [
+        "TableTaskCartToConveyor2",
+        "TableTaskMixedPacking2"
+      ]
+    },
+    "C06": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:sequential",
+        "strat:stacking_aware",
+        "tree:any",
+        "tree:cortex"
+      ],
+      "members": [
+        "TableTaskConveyorColorStacks2"
+      ]
+    },
+    "C07": {
+      "features": [
+        "strat:sequential",
+        "strat:stacking_aware",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height"
+      ],
+      "members": [
+        "TableTaskLayeredCircle2"
+      ]
+    },
+    "C08": {
+      "features": [
+        "planner:curobo",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tree:specialized",
+        "tuning:timeout"
+      ],
+      "members": [
+        "TableTask3Curobo"
+      ]
+    },
+    "C09": {
+      "features": [
+        "policy:target_reachable_fn",
+        "strat:dynamic_selection",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tuning:pick_approach_p"
+      ],
+      "members": [
+        "TableTaskBottlesToConveyor2"
+      ]
+    },
+    "C10": {
+      "features": [
+        "strat:attribute_routing",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height",
+        "tuning:pick_approach_p"
+      ],
+      "members": [
+        "TableTaskConveyorTypeSort2"
+      ]
+    },
+    "C11": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:sequential",
+        "strat:stacking_aware",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height"
+      ],
+      "members": [
+        "TableTaskSortAndStack2"
+      ]
+    },
+    "C12": {
+      "features": [
+        "policy:target_reachable_fn",
+        "strat:dynamic_selection",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tree:specialized",
+        "tuning:pick_approach_p"
+      ],
+      "members": [
+        "TableTaskBottlesToConveyor2x"
+      ]
+    },
+    "C13": {
+      "features": [
+        "policy:target_reachable_fn",
+        "strat:dynamic_selection",
+        "strat:sequential",
+        "tree:any",
+        "tree:cortex",
+        "tuning:descent_thresh",
+        "tuning:pick_posture",
+        "tuning:place_posture"
+      ],
+      "members": [
+        "TableTaskSoupCans2"
+      ]
+    },
+    "C14": {
+      "features": [
+        "policy:virtual_targets",
+        "strat:sequential",
+        "strat:stacking_aware",
+        "tree:any",
+        "tree:cortex",
+        "tuning:ee_height",
+        "tuning:place_approach",
+        "tuning:place_hover",
+        "tuning:startup_delay"
+      ],
+      "members": [
+        "TableTaskCrackerCircle2"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "from": "TableTask2v2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTask2v2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTaskConveyorColorStacks2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTask3b2",
+      "to": "TableTaskMixedPacking2"
+    },
+    {
+      "from": "TableTask3c2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTask3c2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTask3c2",
+      "to": "TableTaskConveyorColorStacks2"
+    },
+    {
+      "from": "TableTask3c2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTask3c2",
+      "to": "TableTaskMixedPacking2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTask3v2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTask4v2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTask5v2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTaskBottles2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskBottles2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskBottles2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskBottlesToConveyor2",
+      "to": "TableTaskBottlesToConveyor2x"
+    },
+    {
+      "from": "TableTaskCartToConveyor2",
+      "to": "TableTaskSortAndStack2"
+    },
+    {
+      "from": "TableTaskColorBinSort2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskColorBinSort2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskColorBinSort2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskColorCircle2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskColorCircle2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTaskColorCircle2",
+      "to": "TableTaskConveyorColorStacks2"
+    },
+    {
+      "from": "TableTaskColorCircle2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskColorCircle2",
+      "to": "TableTaskMixedPacking2"
+    },
+    {
+      "from": "TableTaskColorShapes2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskColorShapes2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskColorShapes2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskColors2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskConveyorColorStacks2",
+      "to": "TableTaskSortAndStack2"
+    },
+    {
+      "from": "TableTaskCrackerBoxes2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTaskCrackerBoxes2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskCrackerBoxes2",
+      "to": "TableTaskLayeredCircle2"
+    },
+    {
+      "from": "TableTaskCrackerBoxes2",
+      "to": "TableTaskMixedPacking2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTaskIncrementalTargets2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTaskLayeredCircle2",
+      "to": "TableTaskSortAndStack2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTask3Curobo"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTask3b2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTask3c2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskBottles2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskBottlesToConveyor2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskColorBinSort2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskColorCircle2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskColorShapes2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskColors2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskCrackerBoxes2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskMixedCircle2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskShapeSortBoxes2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskSoupCanPacking2"
+    },
+    {
+      "from": "TableTaskLayeredCubes2",
+      "to": "TableTaskSoupCans2"
+    },
+    {
+      "from": "TableTaskMixedCircle2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskMixedCircle2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTaskMixedCircle2",
+      "to": "TableTaskConveyorColorStacks2"
+    },
+    {
+      "from": "TableTaskMixedCircle2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskMixedCircle2",
+      "to": "TableTaskMixedPacking2"
+    },
+    {
+      "from": "TableTaskMixedPacking2",
+      "to": "TableTaskSortAndStack2"
+    },
+    {
+      "from": "TableTaskShapeSortBoxes2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskShapeSortBoxes2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskShapeSortBoxes2",
+      "to": "TableTaskConveyorTypeSort2"
+    },
+    {
+      "from": "TableTaskSortAndStack2",
+      "to": "TableTaskCrackerCircle2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTask1v2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTaskCartToConveyor2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTaskConveyorColorStacks2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTaskConveyorSort2"
+    },
+    {
+      "from": "TableTaskSoupCanPacking2",
+      "to": "TableTaskMixedPacking2"
+    }
+  ],
+  "feature_universe": [
+    "planner:curobo",
+    "policy:target_reachable_fn",
+    "policy:virtual_targets",
+    "strat:attribute_routing",
+    "strat:dynamic_selection",
+    "strat:sequential",
+    "strat:stacking_aware",
+    "tree:any",
+    "tree:cortex",
+    "tree:specialized",
+    "tuning:descent_thresh",
+    "tuning:ee_height",
+    "tuning:pick_approach_p",
+    "tuning:pick_posture",
+    "tuning:place_approach",
+    "tuning:place_hover",
+    "tuning:place_posture",
+    "tuning:startup_delay",
+    "tuning:timeout"
+  ],
+  "feature_weights": {
+    "planner:curobo": 3,
+    "planner:curobo_obstacles": 1,
+    "policy:pick_radius_gate": 1,
+    "policy:pick_z_gate": 1,
+    "policy:target_reachable_fn": 2,
+    "policy:virtual_targets": 1,
+    "strat:attribute_routing": 2,
+    "strat:dynamic_selection": 5,
+    "strat:sequential": 0,
+    "strat:stacking_aware": 3,
+    "tree:any": 0,
+    "tree:cortex": 1,
+    "tree:specialized": 3,
+    "tuning:descent_thresh": 1,
+    "tuning:ee_height": 1,
+    "tuning:pick_approach_p": 1,
+    "tuning:pick_approach_std": 1,
+    "tuning:pick_posture": 1,
+    "tuning:place_approach": 1,
+    "tuning:place_hover": 1,
+    "tuning:place_posture": 1,
+    "tuning:startup_delay": 1,
+    "tuning:timeout": 1
+  },
+  "nodes": [
+    "TableTask1v2",
+    "TableTask2v2",
+    "TableTask3Curobo",
+    "TableTask3b2",
+    "TableTask3c2",
+    "TableTask3v2",
+    "TableTask4v2",
+    "TableTask5v2",
+    "TableTaskBottles2",
+    "TableTaskBottlesToConveyor2",
+    "TableTaskBottlesToConveyor2x",
+    "TableTaskCartToConveyor2",
+    "TableTaskColorBinSort2",
+    "TableTaskColorCircle2",
+    "TableTaskColorShapes2",
+    "TableTaskColors2",
+    "TableTaskConveyorColorStacks2",
+    "TableTaskConveyorSort2",
+    "TableTaskConveyorTypeSort2",
+    "TableTaskCrackerBoxes2",
+    "TableTaskCrackerCircle2",
+    "TableTaskIncrementalTargets2",
+    "TableTaskLayeredCircle2",
+    "TableTaskLayeredCubes2",
+    "TableTaskMixedCircle2",
+    "TableTaskMixedPacking2",
+    "TableTaskShapeSortBoxes2",
+    "TableTaskSortAndStack2",
+    "TableTaskSoupCanPacking2",
+    "TableTaskSoupCans2"
+  ]
+}

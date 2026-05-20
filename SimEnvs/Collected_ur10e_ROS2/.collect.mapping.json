@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/home/gstrazds/data/EDI/SimEnvs/ur10e_ROS2.usd",
+            "source_hash": "4523ff2ea81b81389c16b8c7a9bf9409e114c2ce",
+            "target_url": "./ur10e_ROS2.usd",
+            "target_hash": "395c3d058f0b7476449fd711f4b97932a0d49ce9"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "version": "1.0",
+    "file_records": [
+        {
+            "source_url": "/home/gstrazds/data/EDI/SimEnvs/ur10_suction.usd",
+            "source_hash": "7fbe87bec4e99f9f7a730f8a8cb7e3fefb4c238e",
+            "target_url": "./ur10_suction.usd",
+            "target_hash": "5fabb6b87dd02fc51dc911ed266500a92070f5e4"
+        }
+    ]
+}
