@@ -219,3 +219,6 @@ Task*.log
 
 # Recorded simulation outputs (videos, snapshots, telemetry sweeps, etc.)
 _results/
+
+# Claude Code session lock (per-session, written by the harness on ScheduleWakeup)
+**/.claude/scheduled_tasks.lock
