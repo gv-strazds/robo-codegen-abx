@@ -336,6 +336,7 @@ ITEMS_MAP = {
         color="yellow",
         # YCB native Y-long; spawn-rotated -90° X to stand upright.
         up_axis_local=np.array([0.0, -1.0, 0.0]),
+        front_axis_local=np.array([0.0, 0.0, 1.0])
     ),
     "mustard_bottle": AssetMetaData(
         asset_type="mustard_bottle",
