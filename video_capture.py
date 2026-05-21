@@ -348,6 +348,7 @@ class SnapshotCapture:
         sim_time: float,
         pick_index: int,
         extra_metadata: Optional[Dict] = None,
+        settling_frames: Optional[int] = None,
     ) -> None:
         """Queue an event-triggered capture; fires after `settling_frames` ticks.
 
@@ -358,6 +359,9 @@ class SnapshotCapture:
         request time (e.g. an incremental verification failure references
         a previously-completed pick, while the context is already tracking
         the next one).
+
+        ``settling_frames`` overrides the instance-level default (set in
+        ``__init__``) for this one capture.  ``None`` keeps the default.
         """
         if self._closed:
             return
@@ -374,7 +378,8 @@ class SnapshotCapture:
             logger.warning(f"SnapshotCapture: metadata_provider raised: {e}")
         if extra_metadata:
             meta.update(extra_metadata)
-        self._pending_event_captures.append((self._settling_frames, basename, meta))
+        frames = self._settling_frames if settling_frames is None else int(settling_frames)
+        self._pending_event_captures.append((frames, basename, meta))
 
     def tick(self, sim_time: float, pick_index: int) -> None:
         """Drive pending event captures and the time-based cadence.

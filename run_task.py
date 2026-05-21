@@ -464,9 +464,13 @@ def main() -> None:
             # so a clean failure-only run still produces a begin/end pair.
             # Display 0 (not _pick_idx["i"], still -1 here) so the filename
             # agrees with the first pick_started_pick0_* frame.
+            # Extra settling frames here: the off-screen camera annotator is
+            # freshly attached and the renderer needs more warm-up than the
+            # mid-task default to produce a fully-rendered first frame.
             if event_name == EV_TASK_STARTED:
                 snapshot_capture_wide.request_event(
-                    event_name, my_world.current_time, 0
+                    event_name, my_world.current_time, 0,
+                    settling_frames=DEFAULT_SNAPSHOT_SETTLING_FRAMES + 6,
                 )
                 return
             if snapshots_failure_only and event_name not in FAILURE_EVENT_NAMES:
