@@ -54,6 +54,8 @@ Common diagnostic flags for `run_task.py`:
 - `--telemetry-csv PATH` — log per-step telemetry.
 - `--tasks1` / `--tasks2` — restrict task discovery to one of the two parallel implementation sets.
 
+**Capturing output without hanging (agent / automation note):** when invoking `run_task.py` via `mamba run` non-interactively, redirect stdout+stderr to a file (`> /tmp/run.log 2>&1`) instead of piping to `tail` / `head` / `grep`. Piping has been observed to leave the `mamba run` wrapper hanging indefinitely after Isaac Sim itself has exited cleanly (the simulation produces its snapshot artifacts and shuts down, but the wrapper never returns). Redirect-then-`tail -n N` the log afterward is the safe pattern; if a hang does occur, `kill -9` the lingering `mamba run …` pid.
+
 ## Architecture
 
 ### Task System

@@ -232,6 +232,28 @@ Why keep both: (1) alone reduced but didn't eliminate the stalls (observed direc
 
 If only the geometry rule is enforced but the robot is slow, the belt carries away targets faster than they can be serviced. If only the throughput rule is enforced but the belt is slow, new spawns interpenetrate old ones. Both rules must hold simultaneously.
 
+### Issue 14 Details: Default cart decoration props collide with custom cart-spawned picks
+
+**Setup**: `TableTaskGreenCubesRowToYellowGrid` spawns 6 green cubes in a single row along Y at `(CART_SURFACE_CENTER[0] − 0.18, CART_SURFACE_CENTER[1] + j·0.08, …)` for j ∈ {−2.5 .. 2.5}, i.e. row X ≈ −0.72 and Y ∈ [0.53, 0.93]. The workspace lambda initially used the default `setup_two_tables(scene, assets_root)`, which is equivalent to passing `standard_objs=True, add_bin=True`.
+
+**Failure trace**: The Phase 5 self-check passed verification (`task_successful: true`, no failure-event frames), but visual inspection of the task-start snapshot showed one of the green cubes interpenetrating the default `cracker_box` on the cart. `setup_two_tables` places that cracker_box at `TABLETOP_CENTER_POINT + [−0.19, −0.08, 0.15]` ≈ `[−0.75, 0.625, 0.25]`, which falls inside the cube row's footprint in both axes (X ≈ −0.72 is within the cracker_box X half-extent; Y = 0.625 is inside the cube row's Y range).
+
+**Root cause**: `setup_two_tables` has two flags that default to `True`:
+- `standard_objs=True` — adds `cracker_box`, `sugar_box`, `soup_can`, `mustard_bottle` decorative props on top of the cart at fixed offsets from `TABLETOP_CENTER_POINT`. Intended as set dressing for tasks that pick from the bin (so the cart top has visual context for the work area).
+- `add_bin=True` — places the KLT_Bin at `(BIN_X_COORD, BIN_Y_COORD, …)`, the +X half of the cart top.
+
+For tasks where picks come from the bin those defaults are visually correct. But for any task that uses the cart surface as the *pick source*, the four props and/or the bin will sit in the same XY region as the custom layout and intersect it physically.
+
+**Fix**: pass both flags as `False` in the workspace lambda:
+```python
+setup_workspace=lambda scene, assets_root: setup_two_tables(
+    scene, assets_root, standard_objs=False, add_bin=False,
+),
+```
+This leaves the cart, its invisible collision surface, the conveyor + its dropzone surface, and the camera setup in place — only the decoration props and the bin are suppressed. After the change, the cart starts empty except for the six green cubes.
+
+**Reusable check**: any task whose pick generator emits positions inside `CART_SURFACE_REGION` should audit `setup_two_tables` keyword arguments before relying on the defaults. As a quick sanity test, draw the four prop positions (`TABLETOP_CENTER_POINT + [(−0.19,−0.08,0.15), (−0.06,−0.08,0.01), (0.11,−0.08,0.10), (−0.055, 0.235, 0.12)]`) and the bin footprint (`BIN_INNER_REGION`) on top of the planned pick layout — any overlap means `standard_objs=False` and/or `add_bin=False` should be passed. Conversely, if the bin or any prop is part of the intended scene, keep that flag on and just steer the cart layout around it.
+
 ### Issue 13 Details: `disc` (DynamicCylinder) scale_xy acts as radius, not diameter
 
 **Setup**: `TableTaskCrackerCircleMarkers` targets are 4 colored `disc` markers arranged in a circle on the dropzone. First implementation used `target_scale = np.array([DISC_DIAMETER, DISC_DIAMETER, DISC_THICKNESS]) / stage_units` with `DISC_DIAMETER = 0.15`, expecting a 0.15 m wide disc.

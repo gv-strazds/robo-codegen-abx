@@ -108,5 +108,15 @@ Task: Pick upright cracker boxes from the bin and place them onto colored disc m
 
 **General rule**: `DynamicCylinder` (asset types `"disc"` and `"cylinder"`) is created with default `radius=1.0` and `height=1.0`, so the `scale` argument multiplies those — `scale_xy` ends up acting as the **radius**, not the diameter, and `scale_z` is the full height. To get a target diameter `D`, pass `scale_xy = D / 2`. The same logic applies to height: `scale_z = thickness`. When laying out discs on a circle of radius `r` with `count=n`, the chord between adjacent positions is `2 * r * sin(π/n)`; keep `D < chord` for no overlap (e.g. `r=0.18, n=4` → chord ≈ 0.255 m).
 
+## Case Study: TableTaskGreenCubesRowToYellowGrid (May 2026)
+
+Task: Pick 6 green cubes pre-arranged in a single row on the cart and place them onto yellow rectangle markers in a 2x3 grid on the dropzone.
+
+### Issue 14: Default cart decoration props collide with custom cart-spawned picks
+
+**Symptom**: A green cube spawned at the configured row position on the cart intersected the default `cracker_box` placed by `setup_two_tables` (one of the four `standard_objs`), visible as overlap in the task-start snapshot.
+
+**General rule**: When a task spawns pick items on the cart surface (rather than inside the picking bin), the default `setup_two_tables(...)` call adds four decorative YCB props (`cracker_box`, `sugar_box`, `soup_can`, `mustard_bottle`) and a `KLT_Bin` to the cart top, which will occupy the same workspace and likely collide with the custom layout. Pass `standard_objs=False` and `add_bin=False` to the `setup_workspace` lambda so the cart starts empty — keep them only if the bin/props are genuinely part of the task scenario.
+
 ## More details
 See [lessons-learned-details.md](lessons-learned-details.md) for full analysis including root causes, fix details, and clearance calculations.
