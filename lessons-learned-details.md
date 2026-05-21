@@ -307,3 +307,25 @@ This matches `TableTaskColorCircle` and produces clean dropzone snapshots withou
 - *Did the user only describe the layout?* ("in a circle", "in a 2×3 grid", "evenly spaced", "on the dropzone") → use **hidden** `virtual_target_generation_strategy` + `hidden_strategy=FixedValue(True)`.
 
 The bar for visible markers is that the user *names them*. If the description is layout-only, the markers are scaffolding and should stay out of the scene.
+
+### Issue 16 Details: Stationary dropzone markers should default to Fixed* primitives, not Dynamic*
+
+**Setup**: `TableTaskSoupCansDiscs1` targets are 6 colored disc markers arranged in a 2x3 grid on the dropzone. First implementation used `asset_type="disc"` (→ `DynamicCylinder`), copying the convention used by `TableTaskCrackerCircleMarkers`. Discs are spawned at `DROPZONE_Z + 0.001 + thickness/2`; soup cans are placed on top of them by the BT and the discs themselves are never expected to move.
+
+**Failure trace**: Phase 5 headless self-check passed (`task_successful: true`, no failure-event frames). But in the live `--teleport` GUI run the user reported soup cans visibly jittering / vibrating continuously after each placement. The motion was small but persistent and did not damp out within several seconds. Bumping thickness from 2 mm → 1 cm (matching Issue 10's fix) reduced amplitude but did not eliminate the jitter.
+
+**Root cause**: `"disc"` resolves to `DynamicCylinder` — a full rigid body with mass, friction, and physics-material assignments. After a can lands on the disc, the contact stack is `(kinematic dropzone table) ↔ (dynamic disc) ↔ (dynamic soup can)`. The solver has to maintain stable normal forces through all three layers, and small mismatches in physics material parameters plus uneven contact between the disc bottom and the USD dropzone collision geometry produce tiny normal-force oscillations. The disc wobbles; the can on top transmits and amplifies the motion visually. Tuning the disc's mass / thickness / material parameters can attenuate the wobble but does not remove the underlying instability — the disc still has a rigid body.
+
+The clean fix is to remove the disc's rigid body entirely. `PRIMS_MAP["fixed_disc"] = FixedCylinder` (asset_utils.py:85) provides a static collider with no RigidBodyAPI / MassAPI — the solver treats it as part of the static world. The disc cannot oscillate at all because it has no mass / velocity state. Visually identical, physically inert.
+
+**Fix**: change `asset_type_strategy=FixedValue("disc")` → `FixedValue("fixed_disc")`. No other changes (scale, color, thickness, position) required. After the swap, the user confirmed the jitter was gone in the live GUI run.
+
+**Reusable check**: when designing a task with decorative target markers on a static surface (dropzone, cart top, table top), default to the **Fixed*** primitive variant. Quick lookup:
+
+| Intended target shape | Static (default for stationary markers) | Dynamic (only when target must move) |
+|-----------------------|------------------------------------------|---------------------------------------|
+| Disc / Cylinder       | `"fixed_disc"` → `FixedCylinder`         | `"disc"` / `"cylinder"` → `DynamicCylinder` |
+| Box / Rectangle       | `"rect"` → `FixedCuboid`                 | `"cube"` → `DynamicCuboid`            |
+| Sphere / Ball         | *(no Fixed variant in `PRIMS_MAP`)*      | `"ball"` → `DynamicSphere`            |
+
+Reach for the dynamic variant only when the target must physically respond to forces — e.g. ride a moving conveyor (Issue 10), tumble after collision, or get nudged by another rigid body. For stationary visual markers, dynamic primitives are over-specified and invite contact-stack-instability jitter. Compare with Issue 10, which is the exact opposite situation (a `"rect"` target on a conveyor failed to move *because* it was static); pick the variant that matches whether the target must move, not by copying a sibling task's choice.

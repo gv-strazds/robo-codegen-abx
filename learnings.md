@@ -128,5 +128,15 @@ Task: Pick 6 upright sugar boxes from a row in the bin and place them onto a cir
 
 **General rule**: When the user describes *where* items should go (an arrangement: "in a circle", "in a 2×3 grid", "on the dropzone") without describing what the *targets themselves* should look like (no color, no thickness, no asset type, no "use red discs", etc.), default to hidden virtual targets via `TaskImplementationSpec.virtual_target_generation_strategy` with `hidden_strategy=FixedValue(True)` (and omit `target_generation_strategy` from the `TaskSpec`). The placement positions are still well-defined and verifiable; the dropzone surface just stays uncluttered. Reach for visible `target_generation_strategy` only when the user explicitly names target appearance (color, size, asset/shape — "yellow rectangles", "colored disc markers") or otherwise asks for a visible cue at each drop spot.
 
+## Case Study: TableTaskSoupCansDiscs1 (May 2026)
+
+Task: Pick soup cans from the bin and place them onto colored disc markers in a 2x3 grid on the dropzone.
+
+### Issue 16: Dynamic-primitive markers jitter under items resting on them
+
+**Symptom**: Soup cans placed onto `"disc"` (`DynamicCylinder`) target markers on the static dropzone vibrated continuously after placement. Verification still passed, but the live GUI showed visible jitter that thickness tweaks (2 mm → 1 cm) reduced without eliminating.
+
+**General rule**: For target markers that should stay still throughout the task (decorative discs, rectangles, pads on a static dropzone or cart top), default to the **static** primitive variant — `"fixed_disc"` → `FixedCylinder`, `"rect"` → `FixedCuboid`. Reserve the dynamic variants (`"disc"`, `"cylinder"`, `"cube"`, `"ball"`) only for cases where the target itself must respond to physics, e.g. ride a moving conveyor (see Issue 10) or be jostled by other objects. A dynamic primitive squeezed between two rigid bodies (a placed item above, kinematic table below) gets caught in a contact-resolution loop driven by uneven surface contact and physics-material mismatch; the disc is the wobble source and the placed item amplifies it visually. No thickness or material tweak fully eliminates this — switch to the Fixed variant instead.
+
 ## More details
 See [lessons-learned-details.md](lessons-learned-details.md) for full analysis including root causes, fix details, and clearance calculations.
