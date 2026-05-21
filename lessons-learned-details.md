@@ -267,3 +267,43 @@ This leaves the cart, its invisible collision surface, the conveyor + its dropzo
 **Reusable check**: when sizing `disc` or `cylinder` assets, remember `scale_xy = radius`, not diameter. The two convenient sanity checks at the call site:
 - Adjacent-marker chord on a `count=n`, `radius=r` circle is `2 * r * sin(π/n)`; the disc diameter must stay under it (with a comfortable gap) to avoid overlap.
 - For DynamicCuboid (`"cube"` / `"rect"`) `scale_xy` is the side length, but for DynamicCylinder it's the radius — don't reuse a `scale` value across the two primitive families without halving / doubling.
+
+### Issue 15 Details: Default to hidden virtual targets unless the user specifies visible target geometry
+
+**Setup**: `TableTaskSugarBoxesRowToCircle` was created from the user request *"Starting with a row of 6 vertical sugar boxes in the pick bin, arrange them in a circle on the drop zone."* The user described the picks concretely (6 sugar boxes, vertical, row, bin) and the destination *arrangement* (a circle on the dropzone), but said nothing about what should occupy each drop position. The initial implementation followed the closest existing template — `TableTaskCrackerBoxes1`, which is also a row of upright YCB boxes into dropzone markers — and inherited its visible-marker target style: 6 white `"rect"` markers (scale `[0.06, 0.06, 0.002]`) via `target_generation_strategy`.
+
+**Failure trace**: Phase 5 self-check passed (`task_successful: true`, no failure-event frames). After viewing the snapshot the user's very next message was: *"make the destination targets not visible"*. The fix was mechanical — switch `asset_type` from `"rect"` to `"marker"`, add `hidden_strategy=FixedValue(True)`, move the generator from `TaskSpec.target_generation_strategy` to `TaskImplementationSpec.virtual_target_generation_strategy`, re-run Phase 4 mock and Phase 5 sim. About one full verification round trip that could have been saved.
+
+**Root cause**: Two different target-spawn patterns coexist in the codebase, and the implementation defaulted to the "wrong" one given the user's actual intent:
+- *Visible targets* (`TaskSpec.target_generation_strategy`, no hidden flag) — used when the marker geometry is part of the *task description*: e.g. `TableTaskCrackerBoxes1` (*"onto thin green rectangles"*), `TableTaskGreenCubesRowToYellowGrid` (*"onto yellow rectangles"*), `TableTaskCrackerCircleMarkers` (*"onto colored disc markers"*). The user's words name the marker's color or shape.
+- *Hidden virtual targets* (`TaskImplementationSpec.virtual_target_generation_strategy` + `hidden_strategy=FixedValue(True)`) — used when the user describes *where* items should land but not what should be there: e.g. `TableTaskColorCircle` (*"place them in a circle on the drop zone"*). The dropzone surface stays bare; targets exist only as logical pairing/placement anchors, never spawned as USD prims.
+
+The cracker-boxes-1 layout was the closest *pick-side* match (row of upright YCB boxes in the bin), so the implementation reused that task's *target-side* style too — without re-checking the user's words for visible-marker intent. They weren't there.
+
+**Fix**: Treat hidden virtual targets as the default for new tasks whose user description gives a destination layout but no target geometry. Concrete pattern:
+```python
+target_strategy = ItemGenerator(
+    position_generator=...,
+    asset_type_strategy=FixedValue("marker"),
+    color_strategy=FixedValue("white"),
+    scale_strategy=FixedValue(marker_scale),
+    hidden_strategy=FixedValue(True),
+)
+
+spec = TaskSpec(
+    ...
+    pick_generation_strategy=pick_strategy,
+    # NO target_generation_strategy here.
+    implementation=TaskImplementationSpec(
+        virtual_target_generation_strategy=target_strategy,
+        ...
+    ),
+)
+```
+This matches `TableTaskColorCircle` and produces clean dropzone snapshots without visible scaffolding.
+
+**Reusable check**: when interpreting a new task request, ask:
+- *Did the user name the targets themselves?* (color, asset type, "marker"/"rectangle"/"disc", explicit size or thickness) → use **visible** `target_generation_strategy`.
+- *Did the user only describe the layout?* ("in a circle", "in a 2×3 grid", "evenly spaced", "on the dropzone") → use **hidden** `virtual_target_generation_strategy` + `hidden_strategy=FixedValue(True)`.
+
+The bar for visible markers is that the user *names them*. If the description is layout-only, the markers are scaffolding and should stay out of the scene.

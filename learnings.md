@@ -118,5 +118,15 @@ Task: Pick 6 green cubes pre-arranged in a single row on the cart and place them
 
 **General rule**: When a task spawns pick items on the cart surface (rather than inside the picking bin), the default `setup_two_tables(...)` call adds four decorative YCB props (`cracker_box`, `sugar_box`, `soup_can`, `mustard_bottle`) and a `KLT_Bin` to the cart top, which will occupy the same workspace and likely collide with the custom layout. Pass `standard_objs=False` and `add_bin=False` to the `setup_workspace` lambda so the cart starts empty — keep them only if the bin/props are genuinely part of the task scenario.
 
+## Case Study: TableTaskSugarBoxesRowToCircle (May 2026)
+
+Task: Pick 6 upright sugar boxes from a row in the bin and place them onto a circle of 6 markers on the dropzone.
+
+### Issue 15: Default to hidden virtual targets unless the user specifies visible target geometry
+
+**Symptom**: User asked for items to be arranged in a circle on the dropzone. First implementation spawned 6 visible white rectangle markers (modelled after `TableTaskCrackerBoxes1`), then the user immediately asked to make them invisible. A round trip of re-implementation + re-verification could have been avoided by defaulting to hidden virtual targets from the start.
+
+**General rule**: When the user describes *where* items should go (an arrangement: "in a circle", "in a 2×3 grid", "on the dropzone") without describing what the *targets themselves* should look like (no color, no thickness, no asset type, no "use red discs", etc.), default to hidden virtual targets via `TaskImplementationSpec.virtual_target_generation_strategy` with `hidden_strategy=FixedValue(True)` (and omit `target_generation_strategy` from the `TaskSpec`). The placement positions are still well-defined and verifiable; the dropzone surface just stays uncluttered. Reach for visible `target_generation_strategy` only when the user explicitly names target appearance (color, size, asset/shape — "yellow rectangles", "colored disc markers") or otherwise asks for a visible cue at each drop spot.
+
 ## More details
 See [lessons-learned-details.md](lessons-learned-details.md) for full analysis including root causes, fix details, and clearance calculations.
