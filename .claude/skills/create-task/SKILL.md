@@ -7,7 +7,7 @@ user-invocable: true
 
 # Task Creator
 
-Create a new `UR10MultiPickPlaceTask` subclass in the `tasks/` directory. Follow these phases in order.
+Create a new `UR10MultiPickPlaceTask` subclass in the `tasks/` directory. Use plan mode initially. Phase 1 below should be addressed during the planning phase. After constructing an initial plan, read learnings.md and review the plan to determine whether any of the previously encountered issues listed there might be relevant. Then update the plan and continue. After getting the user's approval for the plan, follow the subsequent phases (from Phase 2 onward) in order.
 
 ## Phase 1: Understand Requirements
 
