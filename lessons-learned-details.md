@@ -328,4 +328,75 @@ The clean fix is to remove the disc's rigid body entirely. `PRIMS_MAP["fixed_dis
 | Box / Rectangle       | `"rect"` → `FixedCuboid`                 | `"cube"` → `DynamicCuboid`            |
 | Sphere / Ball         | *(no Fixed variant in `PRIMS_MAP`)*      | `"ball"` → `DynamicSphere`            |
 
+### Issue 17 Details: Stacked YCB cracker boxes lean, inflating their AABB along Z and breaking `is_on_top`
+
+**Setup**: `TableTaskCrackerStacksToMarkers` unstacks 18 horizontal cracker boxes from a 3-layer 2×3 pre-stacked source on the dropzone and restacks them as three 6-high horizontal stacks on three green markers on the cart. Verification used a composite `spatial_check_fn = is_on_top(z_tol=0.04) AND is_horizontal(max_tilt_deg=20°)` so each box must rest on its paired target (the marker for layer 0, the previous box for layers 1–5) and lie roughly flat.
+
+**Failure trace**: Phase 5 headless self-check (`--headless --teleport --snapshot-errors`) reported `Verification checks reported UNSUCCESSFUL completion` with 3 failures: `cracker_box_3`, `cracker_box_4`, `cracker_box_5` — all the top-of-stack picks. The snapshot showed three intact, visually correct stacks. Log:
+
+```
+is_on_top FAIL: 'cracker_box_3' on 'cracker_box_0':
+  cracker_box_3 aabb=[..., 0.3848, ..., 0.5049]   (Z span 0.1201)
+  cracker_box_0 aabb=[..., 0.3205, ..., 0.4315]   (Z span 0.1110)
+  xy_overlap=True   z_diff=-0.0467 (tol=0.0400, z_ok=False)
+```
+
+**Root cause**: A flat cracker box has full Z extent 0.0718 m (per `asset_prim_geometry.json`: half_extent 0.0359 m). The observed Z span of 0.12 m is far above that. Working backward through `aabb_z = thickness × cos(θ) + long_dim × sin(θ)` with `thickness = 0.072 m`, `long_dim = 0.213 m`, solving for the observed `aabb_z = 0.12 m` gives `θ ≈ 14°`. Each box in the stack leans by ~13–14° because the YCB `003_cracker_box.usd` asset's contact surfaces aren't perfectly flat (the cardboard panels are modelled with slight curvature / wobble). The leans don't accumulate dangerously (each box still sits stably on the box below), but they inflate the per-box AABB symmetrically around the true rest position:
+
+- Upper box's AABB-bottom is `~0.5 × (aabb_z - thickness) ≈ 0.024 m` *below* its true bottom face.
+- Lower box's AABB-top is `~0.024 m` *above* its true top face.
+- Total AABB overlap: `~0.048 m` — exactly the observed `|z_diff|`.
+
+So `is_on_top`'s `z_tol=0.04` (a value tuned for flat, settled placements) gives a false negative. The boxes really are on top of each other; the AABBs say they interpenetrate.
+
+`is_horizontal(max_tilt_deg=20°)` would have passed at 14° tilt (the up_axis would still be within 20° of the horizontal plane), but it never runs in this test — the composite check short-circuits on the `is_on_top` failure.
+
+**Fix**: Relax both tolerances on the verification function:
+
+```python
+def _cracker_horizontal_on_top(pick_obj, target_obj, ...):
+    on_top = is_on_top(pick_obj, target_obj, ..., z_tol=0.08)   # was 0.04
+    if not on_top:
+        return False
+    return is_horizontal(pick_obj, ..., max_tilt_deg=30.0)       # was 20.0
+```
+
+A `z_tol` of 0.08 m absorbs lean up to ~22° per box; `max_tilt_deg=30°` keeps the orientation check meaningful (a box truly tipped on its long edge would tilt 90° and still fail) while tolerating the YCB asset's inherent skew.
+
+**Reusable check**: when verifying horizontal-stacked YCB assets (cracker_box, sugar_box, etc.):
+- For stacks of ≥ 3 boxes, default `z_tol ≥ 0.07 m` in `is_on_top`.
+- For tilt orientation, default `max_tilt_deg ≥ 25°` in `is_horizontal`.
+- If even those are insufficient (very tall stacks or asymmetric assets), switch to a position-based verifier: compute the expected stack-tip XYZ at pairing time and check `np.linalg.norm(pick_pos - expected_pos) < tol`. AABB-based checks fundamentally lose precision once items lean.
+
+### Issue 18 Details: Centered cart-marker stacks fall outside the UR10's comfortable reach; build furthest stack first
+
+**Setup**: `TableTaskCrackerStacksToMarkers` placed three target stacks in a row along Y on the cart, centered at `CART_SURFACE_CENTER[0]` with `spacing_y=0.30 m`. Headless `--teleport` runs passed all 18 verifications; the user then ran the full-sim variant (with motion planning) and reported that the robot "couldn't reach" the furthest (largest +Y) stack — motion planning either failed outright or churned for very long before producing a path.
+
+**Root cause**: Two interacting issues:
+
+1. **Reachability**: `CART_SURFACE_CENTER` is at `X ≈ -0.79` (relative to UR10 base at origin). The cart half-width in X is 0.35 m, so the cart spans `X ∈ [-1.14, -0.44]`. The far-X side is at the outer edge of the UR10's working radius (`UR10_WORKING_RADIUS ≈ 1.7 m` measured straight-line, but motion planning has to avoid self-collision and the cart itself, which constrains the practical reach much tighter). Stacks centered on the cart sit closer to the far-X edge than necessary; shifting them toward `+X` (toward the robot) buys margin without leaving the cart surface. With marker scale `[0.22, 0.17, 0.005]`, a +0.22 m offset gives marker-center at `X = -0.57`, marker edge at `X = -0.46` — still ~5 cm from the cart's near edge at `X = -0.44`, comfortable.
+
+2. **Build order vs. obstruction**: `LayeredStackStrategy` fills stacks in `target_objs` order. With the default `GridPositionGenerator(rows=3, cols=1, spacing_y=+0.30)`, `target_0` is at smallest +Y, `target_2` at largest +Y. So the nearest-to-robot stack got built first, and by the time the robot tried to build the furthest stack, the two completed nearer stacks (0.43 m tall each) obstructed the arm's natural arc to the back of the cart. With the order reversed (`spacing_y=-0.30`), the furthest stack is built first when the path to it is clear, and the robot finishes by building the nearest stack with no in-front obstacles.
+
+**Fix**: Two coupled adjustments in the target generator:
+
+```python
+# Before
+center=np.array([cart_x, cart_y, marker_z]),
+spacing_y=0.30,
+
+# After
+marker_x_offset = 0.22          # toward +X (closer to robot) edge of cart
+marker_spacing_y = -0.30        # negative → target_0 at largest +Y (furthest stack first)
+center=np.array([cart_x + marker_x_offset, cart_y, marker_z]),
+spacing_y=marker_spacing_y,
+```
+
+After the change the user confirmed the full-sim run worked (all stacks built and reached without motion-plan stalls).
+
+**Reusable check**: when a task places targets on the cart and uses motion planning (not just `--teleport`):
+- Default target X to `CART_SURFACE_CENTER[0] + 0.20 m` (or further toward +X if cart geometry / marker size allow). The cart center is convenient for layout but bad for reachability.
+- For a row of stacks built sequentially, build the **furthest** stack first so completed stacks don't sit between the robot and its next target. `LayeredStackStrategy` and any `MultiPickStrategy` that fills in `target_objs` order can be reordered cheaply via negative `spacing_y` (or by flipping the markers list when building it manually).
+- `--teleport` mode masks both problems because it skips motion planning entirely; always verify reachability in a full-sim run before considering a cart-stacking task complete.
+
 Reach for the dynamic variant only when the target must physically respond to forces — e.g. ride a moving conveyor (Issue 10), tumble after collision, or get nudged by another rigid body. For stationary visual markers, dynamic primitives are over-specified and invite contact-stack-instability jitter. Compare with Issue 10, which is the exact opposite situation (a `"rect"` target on a conveyor failed to move *because* it was static); pick the variant that matches whether the target must move, not by copying a sibling task's choice.

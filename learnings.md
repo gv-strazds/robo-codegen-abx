@@ -138,5 +138,21 @@ Task: Pick soup cans from the bin and place them onto colored disc markers in a 
 
 **General rule**: For target markers that should stay still throughout the task (decorative discs, rectangles, pads on a static dropzone or cart top), default to the **static** primitive variant — `"fixed_disc"` → `FixedCylinder`, `"rect"` → `FixedCuboid`. Reserve the dynamic variants (`"disc"`, `"cylinder"`, `"cube"`, `"ball"`) only for cases where the target itself must respond to physics, e.g. ride a moving conveyor (see Issue 10) or be jostled by other objects. A dynamic primitive squeezed between two rigid bodies (a placed item above, kinematic table below) gets caught in a contact-resolution loop driven by uneven surface contact and physics-material mismatch; the disc is the wobble source and the placed item amplifies it visually. No thickness or material tweak fully eliminates this — switch to the Fixed variant instead.
 
+## Case Study: TableTaskCrackerStacksToMarkers (May 2026)
+
+Task: Unstack 18 horizontal cracker boxes from a 3-layer 2×3 footprint on the dropzone and restack them as three 6-high horizontal stacks on three green markers in a row on the cart.
+
+### Issue 17: Tall horizontal stacks of YCB cracker boxes lean and break AABB-based `is_on_top`
+
+**Symptom**: Headless self-check verification failed for the top box of each stack with `is_on_top FAIL ... z_diff=-0.0467 (tol=0.0400, z_ok=False)`. Each box's AABB Z-extent measured ~0.12 m instead of the expected 0.072 m (the box's local Z half-extent × 2), so the upper box's AABB-bottom dipped below the lower box's AABB-top even though the stack was physically intact in the snapshot.
+
+**General rule**: When stacking YCB asset boxes (cracker_box, sugar_box) on their largest face, every layer adds a small (~10–15°) lean because the asset's contact surfaces aren't perfectly flat. The lean inflates each box's world-frame AABB along Z by ~`0.5 × long_dim × sin(tilt)`, and a strict `is_on_top` check sees that inflation as overlap. For stacks of 3+ horizontal YCB boxes, use a generous `z_tol` (≥ 0.07 m for cracker boxes) and a relaxed `is_horizontal` `max_tilt_deg` (≥ 25–30°), or write a position-based verifier that ignores AABBs entirely.
+
+### Issue 18: Centered cart-marker layout placed the far stack outside the UR10's comfortable reach
+
+**Symptom**: All verification checks passed in `--teleport` mode (which skips motion planning), but the user reported in full-sim testing that the robot struggled to reach the third (furthest +Y) stack — motion planning would fail or take excessively long, even though the marker was nominally within the kinematic envelope.
+
+**General rule**: When placing target stacks on the cart, default to the **+X edge** of the cart (the side closest to the UR10 base), not the cart center. The cart's far-X half is at the edge of the UR10's reachable workspace and motion planning becomes brittle there. Concretely: shift marker X by `~+0.20 m` from `CART_SURFACE_CENTER[0]` (cart half-width is 0.35 m, so a 0.22 m offset still leaves ~5 cm clearance to the cart edge for a 0.22 m-wide marker). Also consider **stack-build order**: for a row of stacks, build the furthest-from-robot stack first while the dropzone is densest and the robot's path to it is least obstructed by already-built stacks. Reversing the marker order in `GridPositionGenerator` via a negative `spacing_y` is the simplest way to achieve this with `LayeredStackStrategy` (which fills stacks in `target_objs` order).
+
 ## More details
 See [lessons-learned-details.md](lessons-learned-details.md) for full analysis including root causes, fix details, and clearance calculations.
