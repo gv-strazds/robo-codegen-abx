@@ -329,6 +329,7 @@ ITEMS_MAP = {
         color="red",
         # YCB native Y-long; spawn-rotated -90° X to stand upright.
         up_axis_local=np.array([0.0, -1.0, 0.0]),
+        front_axis_local=np.array([0.0, 0.0, 1.0])
     ),
     "sugar_box": AssetMetaData(
         asset_type="sugar_box",
@@ -344,6 +345,7 @@ ITEMS_MAP = {
         color="yellow",
         # YCB native Y-long; spawn-rotated -90° X to stand upright.
         up_axis_local=np.array([0.0, -1.0, 0.0]),
+        front_axis_local=np.array([0.0, 0.0, 1.0])
     ),
     "mug_black": AssetMetaData(
         asset_type="mug_black",
