@@ -48,7 +48,6 @@ python run_mock_task.py --list   # list available tasks
 
 Common diagnostic flags for `run_task.py`:
 - `--auto-exit` / `--headless` — exit when the task completes; `--headless` implies `--auto-exit`.
-- `--video` / `--snapshots` / `--snapshot-errors` — capture to `_results/snapshots/<task>_<ts>/` (PNG + sidecar JSON) and `_results/videos/<task>_<ts>.mp4`. `--snapshot-errors` only fires on failure events (plus a task-final frame). These artifacts are agent-readable — see "Visual Debugging with Snapshots and Video" in `docs/mock-system-and-testing-design.md` for the recommended `--snapshot-errors` → `--snapshots` → `--video` escalation workflow.
 - `--physics-dt`, `--rendering-dt`, `--psteps-per-render` — physics/render rates and substep ratio.
 - `--max-sim-time SECONDS` — hard cap on simulated time (`World.current_time`), not wall-clock.
 - `--telemetry-csv PATH` — log per-step telemetry.

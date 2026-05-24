@@ -294,10 +294,7 @@ When `run_mock_task.py` is invoked with `--show-status`, the runner:
 This is invaluable for debugging tree execution flow — seeing which behaviours are RUNNING, SUCCESS, or FAILURE at each step.
 
 `--verbose` (`-v`) implies `--show-status`; `--quiet` suppresses the per-task
-banner and final summary. `run_mock_task.py` also accepts but silently ignores
-visual-capture flags (`--video`, `--snapshots`, `--snapshot-errors`,
-`--headless`) for compatibility with `run_task.py` — there is nothing to
-capture in mock mode.
+banner and final summary.
 
 
 ## 4. The `--teleport` Option
@@ -648,7 +645,6 @@ The current set, grouped by area:
 | `test_cortex_tree_defer.py` | End-to-end cortex tree deferral + recovery paths |
 | `test_cycle_progress_safety.py` | `CheckCycleProgress` no-progress safety-net behaviour |
 | `test_sim_time_decorators.py` | `sim_timeout_to_success` / `SimTimer` semantics |
-| `test_bt_event_visitor.py` | py_trees visitor for BT event logging |
 | `test_motion_methods.py` | Context-side motion command builders |
 | `test_perception_utils.py` | `compute_grasp_pose` / `compute_place_pose` / approach funnel math |
 
@@ -675,7 +671,6 @@ The current set, grouped by area:
 | `test_task_spec.py` | `TaskSpec` / `TaskImplementationSpec` serialization round-trip |
 | `test_args_propagation.py` | CLI → task-class argument flow |
 | `test_ur10_controller.py` | `UR10MultiPickPlaceController` wiring |
-| `test_video_capture.py` | Video / snapshot capture hooks |
 
 
 ## 8. Key Design Decisions
@@ -739,9 +734,6 @@ TASK_SET=ALL bash run_all_mock_tasks.sh
 # Pin seeds per task per run via JSON or text file.
 SEEDS_FILE=seeds.json bash run_all_teleport_tasks.sh 1 3 5
 
-# Capture videos / snapshots through to run_task.py.
-EXTRA_ARGS="--video --snapshots" bash run_all_simulation_tasks.sh
-
 # Direct outputs somewhere other than ./logs.
 SIM_LOGS_DIR=/tmp/run42 bash run_all_simulation_tasks.sh
 ```
@@ -757,7 +749,7 @@ All three wrappers honour the same env vars (implemented in
 | `TASK_SET` | Which tier to enumerate | `--tasks1`, `--tasks2`, or `ALL` (no filter). Default `--tasks2`. Empty string is treated as `ALL`. |
 | `SKIP_TASKS` | Space-separated names to skip | Setting `SKIP_TASKS=""` skips nothing. Ignored when positional indices are supplied. |
 | `SEEDS_FILE` | JSON or text seed map | See section 9.4. When unset, runs use random seeds and tag the log line with `[seed=…]` only when one was pinned. |
-| `EXTRA_ARGS` | Extra args appended verbatim | Lets one wrapper pass e.g. `--video --snapshots` for snapshot capture under `run_task.py`. |
+| `EXTRA_ARGS` | Extra args appended verbatim | Lets one wrapper pass extra flags to `run_task.py`. |
 | `SIM_LOGS_DIR` | Output directory | Default `./logs`. Created with `mkdir -p` if missing. Holds `i-j-<mode>.out` and `i-j-<mode>.stderr` per run, plus `<mode>_results.out`. |
 
 ### 9.4 Seeds-file format
@@ -844,12 +836,6 @@ python run_task.py --task MyNewTask --teleport
 # 5. Step-by-step inspection (interactive)
 python run_task.py --task MyNewTask --teleport --pause
 
-# 5b. Non-interactive visual record (headless, no GUI required)
-python run_task.py --task MyNewTask --teleport --snapshot-errors --headless --auto-exit
-# → Inspect _results/snapshots/<task>_<ts>/task_verified_*.png to judge the
-#   final placement, plus any failure-event PNGs that fired during the run.
-#   See the "Visual Debugging with Snapshots and Video" subsection below.
-
 # 6. Full physics simulation
 python run_task.py --task MyNewTask
 ```
@@ -867,76 +853,6 @@ python run_mock_task.py --task MyTask --pick-count 3 --target-count 3
 python run_task.py --task MyTask --teleport --pause
 # → Press ENTER after each cycle, inspect in GUI
 ```
-
-When interactive `--pause` debugging isn't an option — e.g., a headless
-run, a batch sweep, or an agent-driven session — use the snapshot-based
-workflow described next.
-
-### Visual Debugging with Snapshots and Video (No GUI Required)
-
-Both `--snapshot-errors` (failure-only) and `--snapshots` (failure events plus a time-based cadence) on `run_task.py` write timestamped PNG frames plus sidecar JSON to `_results/snapshots/<task>_YYYYmmdd_HHMMSS/`. The companion `--video` flag streams an MP4 to `_results/videos/<task>_YYYYmmdd_HHMMSS.mp4`. All three work in `--headless --auto-exit` mode, so they're usable in batch runs and by a coding agent that can read the saved PNGs and JSON sidecars directly — no interactive GUI session required.
-
-The recommended escalation ladder:
-
-**1. Start with `--snapshot-errors`** — minimal output, only failure
-events plus the guaranteed task-final frame.
-
-```bash
-python run_task.py --task MyTask --snapshot-errors --headless --auto-exit
-```
-
-Failure-event frames are named for the event that triggered them, e.g.
-`pick_unreachable_pick02_t5.123.png`, `grasp_slipped_pick00_t4.812.png`,
-`timeout_descent_pick01_t12.456.png`, `verify_fail_pick03_t18.000.png`.
-The task always emits a final `task_verified_pickNN_t*.png` frame even
-in failure-only mode, so you can judge end-state visually whether or not
-anything failed. Read the matching `.json` sidecar for `event`,
-`sim_time`, `pick_index`, `pick_name`, `target_name`, and (on the final
-frame) `task_successful` plus `verification_failures`.
-
-**2. Escalate to `--snapshots`** if the failure-only frames aren't
-enough context — adds a 3 Hz simulation-time cadence (wide-camera) so
-you can see what the scene looked like just before and just after the
-failure event.
-
-```bash
-python run_task.py --task MyTask --snapshots --headless --auto-exit
-```
-
-Cadence frames are sequentially numbered `0001.png`, `0002.png`, ...
-each with a `.json` sidecar carrying `kind: "time_based"`, `sim_time`,
-`pick_index`, and `sequence`. To find the frames bracketing a failure
-event, sort the directory by file modification time (`ls -lrt` or
-similar) — that matches capture order, which matches sim-time order
-because frames are written as they're captured. Cadence frames
-(`NNNN.png`) and event frames (`{event_name}_pick{NN:02d}_t*.png`)
-**will not interleave in alphabetical order**, so don't rely on
-name-sort. Alternatively, read the sidecar JSONs and sort by their
-`sim_time` field.
-
-**3. Use `--video`** for batch / headless regressions you'll review
-later (e.g. an overnight sweep), or alongside snapshots when you want
-both an artifact for the diff and a continuous record:
-
-```bash
-python run_task.py --task MyTask --video --headless --auto-exit
-```
-
-**Filename anatomy.** Event frames: `{event_name}_pick{NN:02d}_t{sim_time:.3f}.png`.
-Cadence frames: `{NNNN}.png`. Every `.png` has a sibling `.json`. The
-full event-name set (BT successes, BT failures, watchdog timeouts,
-incremental verification failures, task-verified) is defined in
-`bt_event_visitor.py`.
-
-**Agent-driven debugging.** A coding agent diagnosing a failure should
-follow the same ladder: run with `--snapshot-errors --headless
---auto-exit`, list the `_results/snapshots/<run-dir>/` produced, read
-the most recent failure-event JSON to identify what fired and at what
-`sim_time` / `pick_index`, view its PNG to recognise the visual
-symptom, then escalate to `--snapshots` if the single-event frame isn't
-enough context. The PNG + JSON pairs are read-after-the-fact artifacts,
-so the agent can inspect them with normal file reads without needing an
-interactive Isaac Sim session.
 
 ### Running the Test Suite
 

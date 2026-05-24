@@ -185,9 +185,7 @@ class UR10MultiPickPlaceTask(tasks.BaseTask):
         self._prev_completed_picks = set()
         self._pending_incremental_pick_names: List[str] = []
         # Optional callback fired once per failed incremental verification
-        # check.  Used by ``run_task.py --snapshots`` to capture a
-        # diagnostic image at the moment of failure.  Signature:
-        # ``(check: PlacementCheck, sim_time: float) -> None``.
+        # check.  Signature: ``(check: PlacementCheck, sim_time: float) -> None``.
         self._on_incremental_check_fail: Optional[Callable] = None
         # Public, concise, natural-language description of the task scenario.
         # Derived from TaskSpec.task_description, with a generic default fallback.

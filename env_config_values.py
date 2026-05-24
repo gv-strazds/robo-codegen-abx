@@ -58,7 +58,7 @@ CAMERA_VEC = CAMERA_VIEW1_LOOKAT-CAMERA_VIEW1_POS
 CAMERA_EXTRA_DISTANCE = CAMERA_VEC*0.25
 CAMERA_VIEW1_POS = CAMERA_VIEW1_POS - CAMERA_EXTRA_DISTANCE
 # Wider preset: pull back further along the same view vector and tilt the
-# look-at point down so video / wide snapshots show more of the scene.
+# look-at point down so the wide camera shows more of the scene.
 CAMERA_VIEW1_WIDE_POS = CAMERA_VIEW1_POS - CAMERA_VEC * 0.35
 CAMERA_VIEW1_WIDE_LOOKAT = CAMERA_VIEW1_LOOKAT + np.array([0.0, 0.0, -0.3])
 # =============================================================================

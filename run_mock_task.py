@@ -76,13 +76,10 @@ def main():
         "--auto-exit", "-x", action="store_true",
         help="Ignored (accepted for compatibility with run_task.py)",
     )
-    # Visual-capture flags accepted (and silently ignored) for compatibility with
-    # run_task.py — there is nothing to capture in mock mode.
-    for _flag in ("--video", "--snapshots", "--snapshot-errors", "--headless"):
-        parser.add_argument(
-            _flag, action="store_true",
-            help=argparse.SUPPRESS,
-        )
+    parser.add_argument(
+        "--headless", action="store_true",
+        help=argparse.SUPPRESS,
+    )
 
     args = parser.parse_args()
 

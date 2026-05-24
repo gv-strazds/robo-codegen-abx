@@ -16,7 +16,6 @@
 # Examples:
 #   NUM_RUNS=3 bash run_all_simulation_tasks.sh
 #   SEEDS_FILE=seeds.json bash run_all_simulation_tasks.sh 1 3 5
-#   EXTRA_ARGS="--video --snapshots" bash run_all_simulation_tasks.sh
 #   SIM_LOGS_DIR=/tmp/run42 bash run_all_simulation_tasks.sh
 
 DEFAULT_NUM_RUNS=1

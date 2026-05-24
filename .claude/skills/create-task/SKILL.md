@@ -82,53 +82,25 @@ Add `--show-status` for detailed py_trees tree state per tick (useful for debugg
 Add --seed <random_seed> to specify a random seed for the task.
 If the task setup includes some randomization, run the mock task multiple times with different seeds to verify that the task is robust to randomization.
 
-## Phase 5: Agent Self-Check (Snapshot-Based, No GUI Required)
+## Phase 5: User Approval
 
-Once the mock and unit tests pass, your *first* full-sim validation is non-interactive — you do this yourself before bothering the user. Run the task headless with teleport (skips motion planning, so it's fast) and `--snapshot-errors` (writes PNG + JSON only on BT failure events, watchdog timeouts, verification failures, plus a guaranteed task-final frame):
+Once the mock and unit tests pass, invite the user to approve the task. Offer them:
 
+**Run interactively with `--teleport`** (optionally `--pause`) to drive it in the Isaac Sim GUI:
 ```bash
-mamba run -n env_isaacsim51 python run_task.py --task TableTask<Name> --headless --teleport --snapshot-errors --auto-exit
+mamba run -n env_isaacsim51 python run_task.py --task TableTask<Name> --teleport --pause
 ```
-
-The run prints the output directory, something like `_results/snapshots/<task>_YYYYmmdd_HHMMSS/`. Inspect what landed there:
-
-1. **Verify the run completed without errors** (return code 0; no traceback in the log).
-2. **Read the task-final frame's sidecar JSON.** The file is `task_verified_pickNN_t*.json` next to its PNG. Check `task_successful: true` and an empty `verification_failures: []`.
-3. **Look at the task-final PNG.** Confirm the end-state matches intent: items in the right places, upright if required, no items toppled or stuck. Treat this as the canonical "does the final state look reasonable" check.
-4. **If any failure-event frames are present** (e.g., `pick_unreachable_*.png`, `grasp_slipped_*.png`, `timeout_descent_*.png`, `verify_fail_*.png`) — open the PNG and read the matching `.json` for `event`, `sim_time`, `pick_index`, `pick_name`, `target_name`. Diagnose and fix before moving on.
-5. **If the task-final image is ambiguous or a failure has unclear cause, escalate to cadence snapshots.** Drop `--teleport` (so you see physics-driven motion) and use `--snapshots` instead of `--snapshot-errors` — this adds a 3 Hz simulation-time cadence of wide-camera frames:
-   ```bash
-   mamba run -n env_isaacsim51 python run_task.py --task TableTask<Name> --headless --snapshots --auto-exit
-   ```
-   Sort the snapshot directory by filename (sim-time-ordered) and inspect the frames immediately before and after the failure event to see the run-up.
-
-The reason this self-check exists: the user is a scarce resource, and snapshot artifacts (PNG + JSON) are agent-readable without an Isaac Sim GUI session. Catch obvious problems here so Phase 6 is the user reviewing a working task, not debugging a broken one. For the full workflow reference, see `### Visual Debugging with Snapshots and Video (No GUI Required)` in `docs/mock-system-and-testing-design.md` (section 10).
-
-If you fix anything based on the self-check, re-run from Phase 4 (mock) before re-running this phase.
-
-## Phase 6: User Approval
-
-Only after Phase 5 passes (no failure events; task-final image looks reasonable) — and *BEFORE OFFERING TO COMMIT CHANGES* — invite the user to approve the task. Offer them two options:
-
-1. **Look at the task-final image directly.** Give them the path printed in Phase 5 — `_results/snapshots/<task>_<ts>/task_verified_pickNN_t*.png` — and ask them to confirm it matches their intent.
-2. **Run interactively with `--teleport`** (optionally `--pause`) if they want to drive it themselves in the Isaac Sim GUI:
-   ```bash
-   mamba run -n env_isaacsim51 python run_task.py --task TableTask<Name> --teleport --pause
-   ```
-   `--teleport` skips motion planning; `--pause` stops after each cycle so the user can inspect the scene.
+`--teleport` skips motion planning; `--pause` stops after each cycle so the user can inspect the scene.
 
 DO NOT consider the task complete or offer to commit the changes until the user has confirmed the task setup and completion state match their intent. If they request adjustments (spacing, positions, box sizes, pick order, etc.), iterate on the implementation and re-test from Phase 4.
 
-If the task setup involves randomization, after the initial approval, ask whether the user wants additional runs with different seeds. For each additional seed, do the Phase 5 self-check first, then surface the new task-final image to the user. Repeat until they're satisfied.
+## Phase 6: Check saved learnings
+If the user reports issues during or after Phase 5 (from their interactive testing or seed-variant runs), then, in preparation for attempting to diagnose and fix them:
+1. Check `learnings.md` to see if any similar issues have been reported and resolved in the past. If you find entries about similar issues, also read the corresponding sections of `lessons-learned-details.md` for more detail.
 
-## Phase 7: Check saved learnings
-If the user reports issues during or after Phase 6 (from their interactive testing or seed-variant runs), then, in preparation for attempting to diagnose and fix them, do two things:
-1. Reproduce the failure under `--snapshot-errors` (or `--snapshots` if the failure-only frames don't show enough context) and inspect the relevant failure-event PNG + JSON before forming a hypothesis — the visual symptom often constrains the search space dramatically.
-2. Check `learnings.md` to see if any similar issues have been reported and resolved in the past. If you find entries about similar issues, also read the corresponding sections of `lessons-learned-details.md` for more detail.
+## Phase 7: Learn from User Interactions
 
-## Phase 8: Learn from User Interactions
-
-If the user makes adjustments to the task based on Phase 6, or reports issues based on interactive testing of the full simulated task, then, after fixing the issues (possibly with assistance or guidance from the user), make a record of learnings learned, as follows:
+If the user makes adjustments to the task based on Phase 5, or reports issues based on interactive testing of the full simulated task, then, after fixing the issues (possibly with assistance or guidance from the user), make a record of learnings learned, as follows:
 
 Extract any lessons or tips that can be learned from the issues that were encountered and how they were resolved. Summarize the learnings and save them into learnings.md and lessons-learned-details.md, for future reference (to avoid similar mistakes or to help deal with similar errors). These two files are at differing levels of detail: learnings.md is high-level only, with just Symptom and General Rule subsections for each issue, while lessons-learned-details.md should provide more details about how the issues were identified and resolved. Check exiting entries in these file for examples, and then make edits to add new entries without modifying the exiting ones.
 
