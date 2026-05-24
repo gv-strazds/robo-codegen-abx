@@ -448,6 +448,9 @@ class MultiPickStrategy:
         n = len(self._picking_order_item_names)
         while self._current_pick_index < n:
             name = self._picking_order_item_names[self._current_pick_index]
+            if name in self._completed_picks:
+                self._current_pick_index += 1
+                continue
             if name in self._permanently_unreachable_picks:
                 logger.debug(
                     "advance_pick_index: skipping '%s' (permanently unreachable)", name,
