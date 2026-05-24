@@ -298,6 +298,48 @@ def test_initial_count_clamped_to_total():
     assert sched.all_released
 
 
+def test_trigger_delay_waits_after_predicate_fires():
+    primary = _grid_gen(count=4)
+    cfg = SpatialTriggerConfig(
+        region=SpatialTriggerRegion(),
+        initial_count=1,
+        trigger_delay=2.0,
+    )
+    sched = SpatialTriggeredItemScheduler(primary, cfg, count_range=4, seed=0)
+    sched.get_initial_batch()
+    # Predicate fires at t=1.0 — trigger_delay starts counting.
+    assert sched.tick(1.0, current_xy=[], conveyor_speed=-0.01) == []
+    # Still within delay window (only 1.0s elapsed).
+    assert sched.tick(2.0, current_xy=[], conveyor_speed=-0.01) == []
+    # Delay elapsed (2.0s since t=1.0).
+    new = sched.tick(3.0, current_xy=[], conveyor_speed=-0.01)
+    assert len(new) == 1
+    assert sched.released_count == 2
+
+
+def test_trigger_delay_resets_when_predicate_drops():
+    primary = _grid_gen(count=4)
+    cfg = SpatialTriggerConfig(
+        region=SpatialTriggerRegion(min_x=-1.0, max_x=1.0, min_y=-1.0, max_y=1.0),
+        initial_count=1,
+        invert=True,
+        trigger_delay=2.0,
+    )
+    sched = SpatialTriggeredItemScheduler(primary, cfg, count_range=4, seed=0)
+    sched.get_initial_batch()
+    # Item outside region at t=1.0 — predicate fires, delay starts.
+    assert sched.tick(1.0, current_xy=[(0.0, 5.0)], conveyor_speed=-0.01) == []
+    # Item re-enters region at t=2.0 — predicate drops, delay resets.
+    assert sched.tick(2.0, current_xy=[(0.0, 0.0)], conveyor_speed=-0.01) == []
+    # Item leaves again at t=3.0 — delay restarts from scratch.
+    assert sched.tick(3.0, current_xy=[(0.0, 5.0)], conveyor_speed=-0.01) == []
+    # Only 1.0s elapsed since restart — still blocked.
+    assert sched.tick(4.0, current_xy=[(0.0, 5.0)], conveyor_speed=-0.01) == []
+    # 2.0s elapsed since restart at t=3.0 — fires.
+    new = sched.tick(5.0, current_xy=[(0.0, 5.0)], conveyor_speed=-0.01)
+    assert len(new) == 1
+
+
 def test_reset_replays_initial_batch():
     primary = _grid_gen(count=4)
     cfg = SpatialTriggerConfig(
