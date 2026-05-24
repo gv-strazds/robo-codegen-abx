@@ -36,18 +36,6 @@ python run_task.py --task <TaskName>
 
 The `--task` argument corresponds to class names in the `tasks/` directory (e.g., `TableTask3`, `TableTaskColors1`, `TableTaskSoupCans1`).
 
-### Running Mock Tasks (No Isaac Sim required)
-
-For testing behavior trees and logic without launching the full simulation:
-
-```bash
-python run_mock_task.py --task TableTask3
-python run_mock_task.py --task TableTaskColors1 --seed 42 --show-status
-python run_mock_task.py --list   # list available tasks
-```
-
-`run_mock_task.py` runs any task configuration through the mock py_trees BT, with task verification, configurable pick/target counts, and optional `--show-status` to display the py_trees tree status and DEBUG logging after each tick. See `--help` for all options.
-
 ### Running Tests
 
 The testing suite requires the `env_isaacsim51` environment and proper `PYTHONPATH` setup to include mocks.
@@ -69,7 +57,6 @@ Note: `pytest` is normally installed as a bash command in `env_isaacsim51`; if i
 To regenerate PDF files from Markdown in the `docs/` directory, use `npx md-to-pdf`:
 
 ```bash
-npx md-to-pdf docs/mock-system-and-testing-design.md
 npx md-to-pdf docs/task-environment-setup-design.md
 ```
 
