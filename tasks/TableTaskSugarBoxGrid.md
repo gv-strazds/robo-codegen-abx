@@ -2,11 +2,11 @@
 
 ## User Request
 
-Pick sugar boxes from the bin and place them, vertically, in a 3x4 grid in the dropzone. The sugar boxes appear incrementally one at a time in the center of the bin. Initially, there is only one — a new one spawns 1.2 seconds after there is no sugar box in the bin. The task is finished when the destination grid is full.
+Pick sugar boxes from the bin and place them, vertically, in a 3x4 grid in the dropzone. The sugar boxes appear incrementally one at a time in the center of the bin. Initially, there is only one — a new one spawns 2.2 seconds after there is no sugar box in the bin. The task is finished when the destination grid is full.
 
 ## Task Overview
 
-Sugar boxes spawn one at a time at the bin center via a spatial-trigger mechanism: after the robot picks the current box (bin becomes empty), a 1.2-second cooldown elapses before the next box appears. The robot places each box vertically onto visible green rect markers arranged in a 3x4 grid on the dropzone. The task completes when all 12 grid positions are filled.
+Sugar boxes spawn one at a time at the bin center via a spatial-trigger mechanism: after the robot picks the current box (bin becomes empty), a 2.2-second cooldown elapses before the next box appears. The robot places each box vertically onto invisible virtual markers arranged in a 3x4 grid on the dropzone. The task completes when all 12 grid positions are filled.
 
 ## Concise Task Description
 
@@ -18,7 +18,7 @@ Pick incrementally-spawned sugar boxes from the bin center and place them vertic
 - **Count**: 12 (spawned incrementally)
 - **Arrangement**: Single point at bin center `[BIN_X_COORD, BIN_Y_COORD]`
 - **Orientation**: Upright (-90° X rotation)
-- **Spawning**: `SpatialTriggerConfig` with `invert=True` on the bin region; `initial_count=1`, `items_per_batch=1`, `min_spawn_interval=1.2`
+- **Spawning**: `SpatialTriggerConfig` with `invert=True` on the bin region; `initial_count=1`, `items_per_batch=1`, `trigger_delay=2.2`
 
 ## Target Objects
 

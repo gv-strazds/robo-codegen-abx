@@ -69,7 +69,7 @@ class TableTaskSugarBoxGrid(UR10MultiPickPlaceTask):
             color_strategy=None,
         )
 
-        # Spatial trigger: spawn next box 1.2s after the previous one
+        # Spatial trigger: spawn next box 2.2s after the previous one
         # leaves the bin region (picked up and transported away).
         pick_trigger = SpatialTriggerConfig(
             region=SpatialTriggerRegion(
@@ -81,7 +81,7 @@ class TableTaskSugarBoxGrid(UR10MultiPickPlaceTask):
             initial_count=1,
             items_per_batch=1,
             invert=True,
-            trigger_delay=8.2,
+            trigger_delay=2.2,
         )
 
         # --- Target strategy: 3x4 grid of hidden markers on the dropzone ---
@@ -131,7 +131,7 @@ class TableTaskSugarBoxGrid(UR10MultiPickPlaceTask):
             task_description=(
                 "Pick incrementally-spawned sugar boxes from the bin center "
                 "and place them vertically onto a 3x4 grid of green markers "
-                "on the dropzone. A new box spawns 1.2s after the previous "
+                "on the dropzone. A new box spawns 2.2s after the previous "
                 "one is removed from the bin."
             ),
             pick_generation_strategy=pick_strategy,
@@ -155,7 +155,7 @@ class TableTaskSugarBoxGrid(UR10MultiPickPlaceTask):
                 "arrangement": "incremental, one at a time at bin center",
                 "colors": "USD asset default (yellow)",
                 "orientation": "upright (-90° X)",
-                "spawning": "SpatialTriggerConfig: invert=True on bin region, 1.2s trigger_delay",
+                "spawning": "SpatialTriggerConfig: invert=True on bin region, 2.2s trigger_delay",
             },
             target_description={
                 "type": "hidden_markers",
