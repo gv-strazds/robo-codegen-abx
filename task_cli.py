@@ -1,4 +1,4 @@
-"""Shared CLI utilities for run_task.py and run_mock_task.py.
+"""Shared CLI utilities for run_task.py.
 
 Consolidates task discovery, argument parsing helpers, task selection
 resolution, seed setup, and count resolution.
@@ -194,7 +194,7 @@ def resolve_task_class(task_name: str, task_modules) -> type:
 
 
 def add_common_task_arguments(parser, available_task_names: str) -> None:
-    """Add the CLI arguments shared between run_task.py and run_mock_task.py."""
+    """Add the CLI arguments shared across task runner entry points."""
     parser.add_argument(
         "--flawed", action="store_true",
         help=(
@@ -216,8 +216,7 @@ def add_common_task_arguments(parser, available_task_names: str) -> None:
     parser.add_argument(
         "--verbose", "-v", action="store_true",
         help=(
-            "With --list: show task_description for each task. "
-            "With run_mock_task.py (without --list): activate --show-status."
+            "With --list: show task_description for each task."
         ),
     )
     parser.add_argument(

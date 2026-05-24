@@ -810,21 +810,6 @@ The mock system monkeypatches the AABB computation functions in `task_verificati
 - Updates the registry after each placement (when objects are moved to their targets)
 - The same `TaskVerifier` code runs for both mock and real sim
 
-### Mock Task Runner
-
-`run_mock_task.py` provides CLI execution of any task through the mock BT:
-
-```bash
-python run_mock_task.py --task TableTaskColors1 --seed 42 --show-status
-```
-
-The tick loop (`mock_task_utils.py`):
-1. Creates mock context and behavior tree
-2. Ticks the tree up to `--max-ticks` times (default 500)
-3. After each tick, checks for newly completed picks and runs incremental verification
-4. After the tree stops, runs final verification
-5. Returns exit code based on completion and verification results
-
 ---
 
 ## 14. Example Task Walkthrough

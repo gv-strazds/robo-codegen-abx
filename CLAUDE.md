@@ -36,19 +36,9 @@ mamba run -n env_isaacsim51 env PYTHONPATH=$(pwd)/extsMock:$(pwd) python -m pyte
 mamba run -n env_isaacsim51 env PYTHONPATH=$(pwd)/extsMock:$(pwd) python -m pytest tests/test_mock_controllers.py
 ```
 
-**Run mock task (no Isaac Sim required):**
-
-```bash
-python run_mock_task.py --task TableTask3
-python run_mock_task.py --task TableTaskColors1 --seed 42 --show-status
-python run_mock_task.py --list   # list available tasks
-```
-
-`run_mock_task.py` runs any task configuration through the mock py_trees BT, with task verification, configurable pick/target counts, and optional `--show-status` to display the py_trees tree status and DEBUG logging after each tick. See `--help` for all options.
-
 Common diagnostic flags for `run_task.py`:
 - `--auto-exit` / `--headless` — exit when the task completes; `--headless` implies `--auto-exit`.
-- `--video` / `--snapshots` / `--snapshot-errors` — capture to `_results/snapshots/<task>_<ts>/` (PNG + sidecar JSON) and `_results/videos/<task>_<ts>.mp4`. `--snapshot-errors` only fires on failure events (plus a task-final frame). These artifacts are agent-readable — see "Visual Debugging with Snapshots and Video" in `docs/mock-system-and-testing-design.md` for the recommended `--snapshot-errors` → `--snapshots` → `--video` escalation workflow.
+- `--video` / `--snapshots` / `--snapshot-errors` — capture to `_results/snapshots/<task>_<ts>/` (PNG + sidecar JSON) and `_results/videos/<task>_<ts>.mp4`. `--snapshot-errors` only fires on failure events (plus a task-final frame). These artifacts are agent-readable; the recommended escalation is `--snapshot-errors` → `--snapshots` → `--video`.
 - `--physics-dt`, `--rendering-dt`, `--psteps-per-render` — physics/render rates and substep ratio.
 - `--max-sim-time SECONDS` — hard cap on simulated time (`World.current_time`), not wall-clock.
 - `--telemetry-csv PATH` — log per-step telemetry.
@@ -136,7 +126,7 @@ Key behaviors:
 
 ### Design docs
 
-Design notes and reference docs live in `docs/`. Stable references include `mock-system-and-testing-design.md`, `task-environment-setup-design.md`, and `PickPlaceAPIs.md`. Many other files in `docs/` are status notes and plans for in-progress work — read with that caveat (they may be stale or describe abandoned approaches).
+Design notes and reference docs live in `docs/`. Stable references include `task-environment-setup-design.md` and `PickPlaceAPIs.md`. Many other files in `docs/` are status notes and plans for in-progress work — read with that caveat (they may be stale or describe abandoned approaches).
 
 ### Generation System
 
@@ -148,7 +138,7 @@ Design notes and reference docs live in `docs/`. Stable references include `mock
 ### Mock System (for testing without Isaac Sim)
 
 - `extsMock/` — Mock implementations of Isaac Sim interfaces, including Cortex types (`MotionCommand`, `PosePq`, `math_util`).
-- `tasks_mock/mock_task_utils.py` — Core infrastructure for mock task execution: config extraction, strategy creation, BT tick loop, and task verification.
+- `tasks_mock/mock_task_utils.py` — Mock infrastructure used by framework tests: config extraction, strategy creation, and mock context setup.
 - `task_context_mock.py` — `MockTaskContext` for testing the py_trees task tree. Creates `MockArmCommander` and `MockGripperCommander`.
 - `robot_controllers/mock_robot.py` — Mock robot, gripper, controllers, and Cortex-aligned commanders (`MockArmCommander`, `MockGripperCommander`, `MockCortexRobot`) for testing.
 
@@ -157,7 +147,7 @@ Design notes and reference docs live in `docs/`. Stable references include `mock
 
 - **Never modify files under `exts/`** — this is a read-only Isaac Sim extension snapshot. Use adapters/wrappers in top-level scripts instead.
 - **Never modify files under `extsMock/`** unless extending mock coverage for new Isaac Sim APIs.
-- When running scripts that are not intended to require the IsaacSim SimulationApp (like run_mock_task.py or the tests in the tests/ directory), the `PYTHONPATH` must include both `extsMock/` (first, to shadow the real `isaacsim` package) and the project root for imports to resolve (handled by the `mamba run` command above). However, when running the Tasks in the tasks/ directory (as launched via the main loop in run_task.py), the IsaacSim SimulationApp is in fact required, and this modification of PYTHONPATH to include extsMock should NOT be done.
+- When running tests in the tests/ directory, the `PYTHONPATH` must include both `extsMock/` (first, to shadow the real `isaacsim` package) and the project root for imports to resolve (handled by the `mamba run` command above). However, when running the Tasks in the tasks/ directory (as launched via the main loop in run_task.py), the IsaacSim SimulationApp is in fact required, and this modification of PYTHONPATH to include extsMock should NOT be done.
 
 ## Code Style
 

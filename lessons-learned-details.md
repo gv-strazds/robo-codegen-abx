@@ -170,7 +170,7 @@ Source: `asset_prim_geometry.json` half-extents × 2, with Y↔Z swap from -90°
 
 **Setup**: First attempt at box-containment verification used three hidden stand-in target prims (one per type). The `MultiTypeSortStrategy` paired every pick to the stand-in whose index matched the pick's type. `containment_check=True` with `box_verification_info={"box_specs": ..., "extra_pick_check": _vertical_check}` handled verification.
 
-**Failure trace**: Verification passed (every item was inside its correct box), but in both the mock dump and Isaac Sim the placed items of one type were sitting on top of each other at the box-center XY, not spread along the box length. `run_mock_task.py` output confirmed it: all sugar_box items at `pos=[-0.503, 0.8034, 0.157]`, etc.
+**Failure trace**: Verification passed (every item was inside its correct box), but in both the mock dump and Isaac Sim the placed items of one type were sitting on top of each other at the box-center XY, not spread along the box length. Mock runner output confirmed it: all sugar_box items at `pos=[-0.503, 0.8034, 0.157]`, etc.
 
 **Root cause**: The BT's `get_placing_info(pick_name, ...)` returns the world pose of the paired target prim for the robot to drop the item at. When multiple picks pair to the same target prim, they all drop at the same (x, y, z). `containment_check=True` lets the *verifier* accept multi-occupancy of a single box target, but it does nothing about the BT's choice of placement position.
 
