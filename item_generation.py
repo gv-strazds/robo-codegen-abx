@@ -613,6 +613,12 @@ class SpatialTriggerConfig:
     # Cooldown so we don't spawn every tick after the predicate holds (gives
     # the just-spawned item a moment to enter the trigger-suppressing region).
     min_spawn_interval: float = 0.0
+    # Delay (seconds) after trigger condition first becomes true before
+    # spawning.  Unlike min_spawn_interval (cooldown from last spawn time),
+    # this counts from when the predicate starts firing — e.g. the moment
+    # the picked item leaves the bin region.  Resets if the predicate
+    # stops firing (item re-enters the region).
+    trigger_delay: float = 0.0
 
 
 class SpatialTriggeredItemScheduler:
@@ -686,6 +692,7 @@ class SpatialTriggeredItemScheduler:
         self._released_count: int = 0
         self._initial_released: bool = False
         self._last_batch_time: Optional[float] = None
+        self._trigger_onset_time: Optional[float] = None
 
     # -- properties ----------------------------------------------------------
 
@@ -751,7 +758,14 @@ class SpatialTriggeredItemScheduler:
                 return []
         # Predicate.
         if not self._trigger_fires(current_xy or []):
+            self._trigger_onset_time = None
             return []
+        # Trigger delay: wait N seconds after trigger condition first becomes true.
+        if self._config.trigger_delay > 0:
+            if self._trigger_onset_time is None:
+                self._trigger_onset_time = current_time
+            if (current_time - self._trigger_onset_time) < self._config.trigger_delay:
+                return []
         # Release next batch from replenishment queue.
         repl_offset = self._released_count - len(self._initial_items)
         start = max(0, repl_offset)
@@ -761,6 +775,7 @@ class SpatialTriggeredItemScheduler:
         new_items = self._replenish_items[start:end]
         self._released_count += len(new_items)
         self._last_batch_time = current_time
+        self._trigger_onset_time = None
         if new_items:
             logger.debug(
                 "SpatialTriggeredItemScheduler: released %d items (%d/%d) at t=%.3f",
@@ -796,4 +811,5 @@ class SpatialTriggeredItemScheduler:
         self._released_count = 0
         self._initial_released = False
         self._last_batch_time = None
+        self._trigger_onset_time = None
 
