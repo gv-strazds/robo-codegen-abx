@@ -322,6 +322,7 @@ ITEMS_MAP = {
         # -90° X rotation maps native -Y → world +Z; up_axis_local picks the
         # signed local direction that lands at world up after the spawn.
         up_axis_local=np.array([0.0, -1.0, 0.0]),
+        front_axis_local=np.array([0.0, 0.0, 1.0])
     ),
     "cracker_box": AssetMetaData(
         asset_type="cracker_box",
