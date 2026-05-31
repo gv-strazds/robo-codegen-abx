@@ -3,6 +3,7 @@ import random
 import sys
 import logging
 
+from contextlib import contextmanager
 from typing import Optional
 
 import numpy as np
@@ -69,6 +70,31 @@ from pxr import Gf, PhysxSchema, UsdPhysics, UsdGeom  # noqa E402
 logger = logging.getLogger(__name__)
 
 
+# Ambient conveyor speed published by the task framework around the
+# setup_workspace call so that setup_two_tables() automatically inherits
+# TaskSpec.conveyor_speed without every task lambda having to forward it
+# explicitly. An explicit conveyor_speed= argument to setup_two_tables still
+# overrides this.
+_AMBIENT_CONVEYOR_SPEED: Optional[float] = None
+
+
+@contextmanager
+def ambient_conveyor_speed(value: Optional[float]):
+    """Temporarily publish ``value`` as the ambient conveyor speed.
+
+    Used by ``UR10MultiPickPlaceTask.setup_workspace`` to make
+    ``setup_two_tables`` inherit ``TaskSpec.conveyor_speed`` when a task's
+    setup_workspace callable does not pass ``conveyor_speed`` explicitly.
+    """
+    global _AMBIENT_CONVEYOR_SPEED
+    prev = _AMBIENT_CONVEYOR_SPEED
+    _AMBIENT_CONVEYOR_SPEED = value
+    try:
+        yield
+    finally:
+        _AMBIENT_CONVEYOR_SPEED = prev
+
+
 def random_spawn_transform(spawn_region: Region2D, z_baseline=BIN_Z_COORD):
     _SPAWN_MIN_Z = 0.25  # 1.0
     _SPAWN_MAX_Z = 0.55  # 1.5
@@ -101,8 +127,12 @@ def setup_two_tables(
     standard_objs=True,
     add_bin=True,
     bin_scale=None,
-    conveyor_speed=0.0,
+    conveyor_speed=None,
 ) -> None:
+    if conveyor_speed is None:
+        # Fall back to the ambient speed published by the task framework
+        # (TaskSpec.conveyor_speed); 0.0 when neither is set.
+        conveyor_speed = _AMBIENT_CONVEYOR_SPEED if _AMBIENT_CONVEYOR_SPEED is not None else 0.0
     if assets_root_path is None:
         assets_root_path = get_assets_root_path()
     # GroundPlane(prim_path="/World/groundPlane", size=3, color=np.array([0.1, 0.15, 0.25]))

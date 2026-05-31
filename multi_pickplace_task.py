@@ -362,7 +362,13 @@ class UR10MultiPickPlaceTask(tasks.BaseTask):
         Subclasses may still override for backward compatibility.
         """
         if self._task_spec is not None and self._task_spec.setup_workspace is not None:
-            self._task_spec.setup_workspace(scene, self._assets_root_path)
+            # Publish TaskSpec.conveyor_speed as the ambient speed so that any
+            # setup_two_tables() call inside the workspace callable inherits it
+            # automatically, without the lambda having to forward it explicitly
+            # (an explicit conveyor_speed= argument still overrides it).
+            from table_setup import ambient_conveyor_speed
+            with ambient_conveyor_speed(self._task_spec.conveyor_speed):
+                self._task_spec.setup_workspace(scene, self._assets_root_path)
 
     def add_source_objects(self, scene) -> None:
         """Delegate to configurator, then register objects with BaseTask tracking."""
