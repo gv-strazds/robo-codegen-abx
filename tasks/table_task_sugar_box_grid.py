@@ -138,11 +138,14 @@ class TableTaskSugarBoxGrid(UR10MultiPickPlaceTask):
             pick_count=12,
             pick_spatial_trigger_config=pick_trigger,
             # Sentinel non-zero conveyor_speed gates spatial-trigger
-            # replenishment; physical conveyor stays stationary (not passed
-            # to setup_two_tables).
+            # replenishment; physical conveyor must stay stationary, so the
+            # physics-side speed is pinned to 0.0 explicitly below (overriding
+            # the ambient passthrough that would otherwise inherit this sentinel).
             conveyor_speed=1e-6,
             conveyor_falloff_enabled=False,
-            setup_workspace=lambda scene, assets_root: setup_two_tables(scene, assets_root),
+            setup_workspace=lambda scene, assets_root: setup_two_tables(
+                scene, assets_root, conveyor_speed=0.0
+            ),
             spatial_check_fn=_sugar_box_spatial_check,
             scenario={
                 "source": "bin",
