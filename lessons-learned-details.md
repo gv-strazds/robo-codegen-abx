@@ -401,51 +401,7 @@ After the change the user confirmed the full-sim run worked (all stacks built an
 
 Reach for the dynamic variant only when the target must physically respond to forces — e.g. ride a moving conveyor (Issue 10), tumble after collision, or get nudged by another rigid body. For stationary visual markers, dynamic primitives are over-specified and invite contact-stack-instability jitter. Compare with Issue 10, which is the exact opposite situation (a `"rect"` target on a conveyor failed to move *because* it was static); pick the variant that matches whether the target must move, not by copying a sibling task's choice.
 
-### Issue 19 Details: `TaskSpec.conveyor_speed` is logic-side only; the physics-side velocity is applied by `setup_two_tables`
-
-**Setup**: `TableTaskConveyorColorRows` set `TaskSpec.conveyor_speed = DEFAULT_CONVEYOR_SPEED`, expecting the belt to drag cubes. Mock and `--teleport` runs passed; full-sim showed cubes stuck exactly at their spawn positions.
-
-**Root cause**: `TaskSpec.conveyor_speed` is read in three places, none of which apply the physics velocity:
-
-1. `multi_pickplace_task._update_more_expected_flags` clears `more_items_expected` for spatial-trigger schedulers when the belt is stationary (so the BT can complete on what's already in flight).
-2. `SpatialTriggeredItemScheduler.tick()` early-exits when `conveyor_speed` is 0 / None — preventing replenishment from firing on a paused belt.
-3. `TaskSpec.falloff_is_enabled()` auto-enables conveyor falloff verification when `conveyor_speed` is truthy.
-
-The actual `PhysxSurfaceVelocityAPI` is applied by `table_setup.setup_two_tables(..., conveyor_speed=value)` — line 182:
-
-```python
-if conveyor_speed != 0.0:
-    PhysxSchema.PhysxSurfaceVelocityAPI.Apply(usd_prim)
-    surface_velocity = PhysxSchema.PhysxSurfaceVelocityAPI(usd_prim)
-    velocity = Gf.Vec3f(0.0, conveyor_speed, 0.0)
-    surface_velocity.CreateSurfaceVelocityAttr(velocity)
-```
-
-If the `setup_workspace` lambda doesn't forward `conveyor_speed`, the surface API is never created → the kinematic surface has zero velocity → cubes don't move.
-
-**Why mock and `--teleport` hid the bug**:
-- Mock has no physics at all; the belt is irrelevant.
-- `--teleport` mode (in `task_context_base.teleport_to_target`) snaps the held item directly to its target prim's pose, skipping the entire grasp+lift+carry+place motion. Items are removed from the belt within ~5 sim seconds before they could have drifted noticeably.
-
-**Fix**: Forward `conveyor_speed` through both call sites in the task class:
-
-```python
-conveyor_speed = DEFAULT_CONVEYOR_SPEED * 0.5  # or whatever the task needs
-
-spec = TaskSpec(
-    ...,
-    conveyor_speed=conveyor_speed,                   # logic side
-    setup_workspace=lambda scene, assets_root: setup_two_tables(
-        scene, assets_root,
-        standard_objs=False, add_bin=False,
-        conveyor_speed=conveyor_speed,                # physics side
-    ),
-)
-```
-
-**Reusable check**: every conveyor task should grep both `TaskSpec(...)` and the `setup_workspace=` lambda body for the same `conveyor_speed` value. A working precedent is `tasks/table_task_conveyor_type_sort.py` (the only task in the repo that does this end-to-end correctly under full sim). Tasks like `table_task_conveyor_color_stacks.py` set `conveyor_speed` on TaskSpec but not on `setup_two_tables` — they happen to work because they use `--teleport` for verification and never exercised full physics.
-
-### Issue 20 Details: Pick reachability gates only exist in the cortex BT; the default tree is open-loop on pick selection
+### Issue 19 Details: Pick reachability gates only exist in the cortex BT; the default tree is open-loop on pick selection
 
 **Setup**: `TableTaskConveyorColorRows` initially used the default 9-phase tree (`make_task_controller_tree` via `pt_task_tree.py`). The user reported that fallen cubes kept being targeted by the robot.
 
@@ -487,7 +443,7 @@ The `pick_min_reachable_z=CONVEYOR_SURFACE_TOP_Z - 0.10` value matches the prece
 
 **Reusable check**: any task that uses `pick_spatial_trigger_config` or `pick_incremental_config` with `conveyor_speed != 0` must use the cortex tree — otherwise unpicked items that fall off the belt edge become an infinite-retry hazard. The `pick_min_reachable_z` field on `TaskImplementationSpec` is the standard knob; setting it without `tree_factory=make_cortex_task_controller_tree` is silently a no-op.
 
-### Issue 21 Details: ColorMatchStrategy + conveyor proximity requires JIT on both sides; subclass mirroring `ConveyorProximityStrategy`
+### Issue 20 Details: ColorMatchStrategy + conveyor proximity requires JIT on both sides; subclass mirroring `ConveyorProximityStrategy`
 
 **Setup**: User specified "robot picks the cubes approaching the end of the conveyor" (proximity-order pick selection) AND "places onto matching colored markers, filling each row from +Y to -Y" (color-matched target assignment with deterministic fill order). Default `ColorMatchStrategy` iterates picks in spawn order: a freshly-spawned cube at the +Y feed point could be selected ahead of an older cube near the belt edge. `ConveyorProximityStrategy` does proximity-order target selection but assumes default sequential picking.
 
