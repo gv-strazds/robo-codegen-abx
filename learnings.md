@@ -154,5 +154,45 @@ Task: Unstack 18 horizontal cracker boxes from a 3-layer 2×3 footprint on the d
 
 **General rule**: When placing target stacks on the cart, default to the **+X edge** of the cart (the side closest to the UR10 base), not the cart center. The cart's far-X half is at the edge of the UR10's reachable workspace and motion planning becomes brittle there. Concretely: shift marker X by `~+0.20 m` from `CART_SURFACE_CENTER[0]` (cart half-width is 0.35 m, so a 0.22 m offset still leaves ~5 cm clearance to the cart edge for a 0.22 m-wide marker). Also consider **stack-build order**: for a row of stacks, build the furthest-from-robot stack first while the dropzone is densest and the robot's path to it is least obstructed by already-built stacks. Reversing the marker order in `GridPositionGenerator` via a negative `spacing_y` is the simplest way to achieve this with `LayeredStackStrategy` (which fills stacks in `target_objs` order).
 
+## Case Study: TableTaskConveyorColorRows (May 2026)
+
+Task: Pick colored cubes (3–5 of each of red/green/blue, randomly interleaved) arriving on a slowly-moving conveyor — 5 spawned initially in a row, the rest replenished one at a time at the +Y feed point — and place each onto a matching-color rectangular marker arranged in 3 color rows of 5 on the cart, filling each row from +Y to -Y.
+
+### Issue 19: `TaskSpec.conveyor_speed` alone does not move the belt
+
+**Symptom**: Full-sim interactive run showed the conveyor surface velocity API never engaging — cubes stayed exactly where they spawned even though `TaskSpec.conveyor_speed = DEFAULT_CONVEYOR_SPEED` was set. Mock and headless `--teleport` runs both passed without revealing the bug (mock has no physics, `--teleport` skips motion planning and teleports items off the belt before they would have drifted).
+
+**General rule**: `TaskSpec.conveyor_speed` is consumed by the *spawner / scheduler* gate ("is the belt moving so spatial-trigger replenishment can fire?") and by *falloff auto-enable*. It does NOT itself apply `PhysxSurfaceVelocityAPI` to the conveyor surface prim — that happens only in `setup_two_tables(scene, assets_root_path, ..., conveyor_speed=...)`. Tasks that want a physically moving belt must pass the same value through both: TaskSpec.conveyor_speed (logic side) AND the `setup_workspace` lambda's `setup_two_tables(conveyor_speed=...)` kwarg (physics side). Forgetting the second one is silent under mock and `--teleport`; only full-sim catches it.
+
+### Issue 20: Default 9-phase BT has no pick-reachability gate; cubes falling off the belt keep getting selected
+
+**Symptom**: In a full-sim conveyor task, after a cube drifted past `CONVEYOR_END_Y` and fell to the floor, the robot kept trying to plan motions toward it (or toward whatever Y value its strategy still saw as "closest"), churning through retries instead of moving on.
+
+**General rule**: Setting `TaskImplementationSpec.pick_min_reachable_z` has no effect under the default 9-phase tree (`make_task_controller_tree`) — only the cortex-style tree (`make_cortex_task_controller_tree`) wires up `CheckPickReachable` + `IsPickReachableGuard`, which mark items below the Z floor as `permanently_unreachable` and short-circuit the retry loop. For any conveyor task where unpicked items can drop off the edge, set `tree_factory=make_cortex_task_controller_tree` on the `TaskImplementationSpec`. The standard `MultiPickStrategy._permanently_unreachable_picks` set is honored by every existing strategy's pick-iteration logic, so the strategy automatically stops returning fallen items.
+
+### Issue 21: JIT-pick strategies that bump `_current_pick_index` every tick break `all_picks_done` for late incremental replenishment
+
+**Symptom**: With `SpatialTriggerConfig` replenishment + a custom strategy overriding `get_current_pick_name` / `advance_pick_index`, the task ended with one "phantom" missing pick — the very last replenishment cube was spawned, but the BT immediately reported "Task has finished" without ever processing it, and verification then reported the item not on its target.
+
+**General rule**: The UR10 controller's `is_done()` (in `ur10_multi_pick_place_controller.py`) checks `task_context.all_picks_done` — base class returns `_current_pick_index >= len(_picking_order_item_names)`. The 9-phase BT calls `advance_pick_index` every tick while `SelectNextPick` waits for incremental items (returning RUNNING), so a naive override that bumps `_current_pick_index` unconditionally drives it past the list size during the idle wait. When the last replenishment cube finally arrives and gets appended to `_picking_order_item_names`, the cursor is already past the new size — `all_picks_done` stays True — and `is_done()` fires before the BT can select the new cube. Two coupled overrides fix it cleanly:
+
+1. In `advance_pick_index`, only consume the cursor when a candidate actually exists (`if next_name is not None: self._current_pick_index += 1`).
+2. Override `all_picks_done` to use the semantically-correct definition: every name in `_picking_order_item_names` is either in `_completed_picks` or in `_permanently_unreachable_picks`. This removes the cursor entirely from the completion check and stays robust against incremental list growth.
+
+### Issue 22: Conveyor + color-matching wants pick-side proximity JIT and target-side color-match JIT — neither built-in strategy does both
+
+**Symptom**: When the user specified "robot picks the cubes approaching the end of the conveyor" + "places them onto matching-color markers, filling each row from +Y to -Y", default `ColorMatchStrategy` honored the colors but iterated picks in spawn order — so a freshly-replenished cube at the +Y feed point could be selected ahead of an older cube about to fall off. The mirror-image `ConveyorProximityStrategy` does proximity-based selection but on the *target* side and assumes a single sequential pairing.
+
+**General rule**: For a conveyor pick + cart-color-match task, subclass `ColorMatchStrategy` with the following overrides, modelled on `ConveyorProximityStrategy`'s latch pattern but reversed:
+
+- `get_current_pick_name` → scan all uncompleted picks for the smallest world Y (closest to `-Y` belt edge), latch the choice in `_active_pick_name` until completion or advance.
+- `advance_pick_index` → clear the latch, re-scan, and only consume a cursor slot when a candidate exists (see Issue 21).
+- `get_placing_target_name` → JIT-assign the first unused matching-color target in `_target_objs` list order; latch in `_latched_target_by_pick` for mid-place stability.
+- `latch_current_pick` / `clear_pick_latch` / `latch_current_target` / `clear_target_latch` → wire up the cortex-tree post-grasp / pre-place latch hooks (no-ops in the default 9-phase tree but needed when switching to the cortex tree per Issue 20).
+- `add_incremental_picks` → extend `_pick_objs` and append new names to `_picking_order_item_names` directly; do NOT call `recompute_pairings` (which would clobber the JIT pairing state, same as `ConveyorProximityStrategy.add_incremental_targets`).
+- `_has_target` → query `_first_unused_matching_target` rather than `_pairings_by_pick_name`, so picks aren't falsely skipped while their JIT target is still being assigned.
+
+Combined with target list pre-sorted +Y → -Y within each color group, this gives "closest-to-edge cube next, dropped onto the +Y-most empty matching-color slot" in a few dozen lines.
+
 ## More details
 See [lessons-learned-details.md](lessons-learned-details.md) for full analysis including root causes, fix details, and clearance calculations.

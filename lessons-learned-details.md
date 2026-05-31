@@ -400,3 +400,211 @@ After the change the user confirmed the full-sim run worked (all stacks built an
 - `--teleport` mode masks both problems because it skips motion planning entirely; always verify reachability in a full-sim run before considering a cart-stacking task complete.
 
 Reach for the dynamic variant only when the target must physically respond to forces — e.g. ride a moving conveyor (Issue 10), tumble after collision, or get nudged by another rigid body. For stationary visual markers, dynamic primitives are over-specified and invite contact-stack-instability jitter. Compare with Issue 10, which is the exact opposite situation (a `"rect"` target on a conveyor failed to move *because* it was static); pick the variant that matches whether the target must move, not by copying a sibling task's choice.
+
+### Issue 19 Details: `TaskSpec.conveyor_speed` is logic-side only; the physics-side velocity is applied by `setup_two_tables`
+
+**Setup**: `TableTaskConveyorColorRows` set `TaskSpec.conveyor_speed = DEFAULT_CONVEYOR_SPEED`, expecting the belt to drag cubes. Mock and `--teleport` runs passed; full-sim showed cubes stuck exactly at their spawn positions.
+
+**Root cause**: `TaskSpec.conveyor_speed` is read in three places, none of which apply the physics velocity:
+
+1. `multi_pickplace_task._update_more_expected_flags` clears `more_items_expected` for spatial-trigger schedulers when the belt is stationary (so the BT can complete on what's already in flight).
+2. `SpatialTriggeredItemScheduler.tick()` early-exits when `conveyor_speed` is 0 / None — preventing replenishment from firing on a paused belt.
+3. `TaskSpec.falloff_is_enabled()` auto-enables conveyor falloff verification when `conveyor_speed` is truthy.
+
+The actual `PhysxSurfaceVelocityAPI` is applied by `table_setup.setup_two_tables(..., conveyor_speed=value)` — line 182:
+
+```python
+if conveyor_speed != 0.0:
+    PhysxSchema.PhysxSurfaceVelocityAPI.Apply(usd_prim)
+    surface_velocity = PhysxSchema.PhysxSurfaceVelocityAPI(usd_prim)
+    velocity = Gf.Vec3f(0.0, conveyor_speed, 0.0)
+    surface_velocity.CreateSurfaceVelocityAttr(velocity)
+```
+
+If the `setup_workspace` lambda doesn't forward `conveyor_speed`, the surface API is never created → the kinematic surface has zero velocity → cubes don't move.
+
+**Why mock and `--teleport` hid the bug**:
+- Mock has no physics at all; the belt is irrelevant.
+- `--teleport` mode (in `task_context_base.teleport_to_target`) snaps the held item directly to its target prim's pose, skipping the entire grasp+lift+carry+place motion. Items are removed from the belt within ~5 sim seconds before they could have drifted noticeably.
+
+**Fix**: Forward `conveyor_speed` through both call sites in the task class:
+
+```python
+conveyor_speed = DEFAULT_CONVEYOR_SPEED * 0.5  # or whatever the task needs
+
+spec = TaskSpec(
+    ...,
+    conveyor_speed=conveyor_speed,                   # logic side
+    setup_workspace=lambda scene, assets_root: setup_two_tables(
+        scene, assets_root,
+        standard_objs=False, add_bin=False,
+        conveyor_speed=conveyor_speed,                # physics side
+    ),
+)
+```
+
+**Reusable check**: every conveyor task should grep both `TaskSpec(...)` and the `setup_workspace=` lambda body for the same `conveyor_speed` value. A working precedent is `tasks/table_task_conveyor_type_sort.py` (the only task in the repo that does this end-to-end correctly under full sim). Tasks like `table_task_conveyor_color_stacks.py` set `conveyor_speed` on TaskSpec but not on `setup_two_tables` — they happen to work because they use `--teleport` for verification and never exercised full physics.
+
+### Issue 20 Details: Pick reachability gates only exist in the cortex BT; the default tree is open-loop on pick selection
+
+**Setup**: `TableTaskConveyorColorRows` initially used the default 9-phase tree (`make_task_controller_tree` via `pt_task_tree.py`). The user reported that fallen cubes kept being targeted by the robot.
+
+**Root cause**: The default 9-phase tree's pick sequence is:
+
+```
+MoveToPickXY → LowerToPick → WaitSettling → CloseGripper → LiftPicked
+```
+
+None of these check whether the pick is reachable — they just send the EE to wherever the strategy's `get_current_pick_name()` reports. The strategy doesn't know the cube is on the floor; it just returns the smallest-Y candidate, which after fall-off is still the fallen cube.
+
+The cortex tree (`make_cortex_task_controller_tree` via `pt_cortex_tree.py`) inserts two gates:
+
+```
+CheckPickReachable → PrepareGrasp → CheckGraspPoseReachable → ...
+```
+
+`CheckPickReachable` polls the live pick prim each tick:
+- If `pos[axis] < ctx.get_pick_min_reachable_z()` (the value set on `TaskImplementationSpec.pick_min_reachable_z`), it calls `strategy.mark_pick_permanently_unreachable(pick_name)` and returns FAILURE.
+- If the pick is outside the XY working radius, it returns RUNNING and starts an `UNREACHABLE_GRACE_S` ~10 s timer; if the grace window expires it also marks the pick permanently unreachable.
+
+`IsPickReachableGuard` is then placed outside the Retry decorator so a pick that goes permanent mid-retry aborts immediately rather than burning the full retry budget.
+
+Once a pick is in `_permanently_unreachable_picks`, every standard `MultiPickStrategy` (`ColorMatchStrategy`, `ConveyorProximityStrategy`, custom JIT strategies) is expected to filter it from selection — both the base class's `_scan_for_available_pick` and `advance_pick_index` exclude it, and any custom strategy should query the set in its own candidate filter.
+
+**Fix**: One line on `TaskImplementationSpec`:
+
+```python
+from robot_controllers.pt_cortex_tree import make_cortex_task_controller_tree
+
+implementation=TaskImplementationSpec(
+    tree_factory=make_cortex_task_controller_tree,
+    pick_min_reachable_z=CONVEYOR_SURFACE_TOP_Z - 0.10,
+    ...
+)
+```
+
+The `pick_min_reachable_z=CONVEYOR_SURFACE_TOP_Z - 0.10` value matches the precedent in `tasks/table_task_conveyor_type_sort.py` — a 10 cm margin below the belt top catches cubes that have fallen but not yet hit the floor, while staying generous enough that a cube riding on the belt with mild physics settling jitter doesn't get falsely flagged.
+
+**Reusable check**: any task that uses `pick_spatial_trigger_config` or `pick_incremental_config` with `conveyor_speed != 0` must use the cortex tree — otherwise unpicked items that fall off the belt edge become an infinite-retry hazard. The `pick_min_reachable_z` field on `TaskImplementationSpec` is the standard knob; setting it without `tree_factory=make_cortex_task_controller_tree` is silently a no-op.
+
+### Issue 21 Details: JIT pick-selection breaks `all_picks_done` semantics when the cursor outruns the picking-order list
+
+**Setup**: `ColorMatchConveyorProximityStrategy` in `tasks/table_task_conveyor_color_rows.py` overrode `get_current_pick_name` and `advance_pick_index` to select picks dynamically by world-Y proximity rather than spawn order. With `SpatialTriggerConfig` replenishing 13 cubes total, the headless `--teleport` self-check completed 12 picks then immediately fired "Task finished" and verification reported the 13th cube (cube_12) "not on a valid target while 1 valid target(s) remain available".
+
+**Trace** (excerpt):
+```
+DEBUG MarkPickComplete: completed 'cube_11'      # 12th completed
+DEBUG SelectNextPick: waiting for more items...   # ~120 idle ticks
+DEBUG SpatialTriggeredItemScheduler: released 1 items (13/13) at t=19.433
+INFO  Incremental generation complete: all 13 pick objects spawned
+WARN  Task 'table_task_conveyor_color_rows' has finished.    # <-- BT ended here
+FAIL  Pick 'cube_12': not placed on any valid target
+```
+
+**Root cause**: `UR10MultiPickPlaceController.is_done()` returns True when `task_context.all_picks_done` is True AND `more_items_expected` is False. The base `MultiPickStrategy.all_picks_done` definition is `_current_pick_index >= len(_picking_order_item_names)`.
+
+The 9-phase tree's `SelectNextPick` calls `advance_pick_index()` on every tick after the first, regardless of whether a new pick was completed. During the ~120 idle ticks waiting for cube_12, the override's `self._current_pick_index += 1` ran once per tick, driving the cursor far past the list length (12 at that time).
+
+When cube_12 was finally spawned via `add_incremental_picks`, the override appended it to `_picking_order_item_names` (now length 13) — but the cursor was already at ~130. `all_picks_done` immediately returned True, the spawner's `all_picks_released = True` set `more_items_expected = False`, and `is_done()` fired in the *same* simulation step that cube_12 was added — before the BT could call `SelectNextPick` again.
+
+**Fix**: Two coupled overrides (final code in `tasks/table_task_conveyor_color_rows.py:130-180`):
+
+```python
+def advance_pick_index(self) -> Optional[str]:
+    self._active_pick_name = None
+    next_name = self.get_current_pick_name()
+    if next_name is not None:
+        self._current_pick_index += 1
+    return next_name
+
+@property
+def all_picks_done(self) -> bool:
+    names = self._picking_order_item_names
+    if not names:
+        return False
+    for name in names:
+        if name in self._completed_picks:
+            continue
+        if name in self._permanently_unreachable_picks:
+            continue
+        return False
+    return True
+```
+
+Now the cursor only increments when there is genuinely something to advance to, and the completion check is semantic (set membership) rather than positional. Both are necessary: just fixing the cursor without fixing `all_picks_done` would still leave a stale cursor from earlier "advance, then no candidate" cycles; just fixing `all_picks_done` without fixing the cursor would still leak the cursor past the list size and complicate any other code that reads `_current_pick_index`.
+
+**Reusable check**: any strategy that overrides `get_current_pick_name` / `advance_pick_index` for JIT pick selection should also override `all_picks_done` semantically. The base class's cursor-based check assumes the cursor moves through the list exactly once — JIT strategies don't preserve that invariant. The same applies to any strategy where `_picking_order_item_names` grows after initialization (incremental spawn + non-sequential pick order).
+
+### Issue 22 Details: ColorMatchStrategy + conveyor proximity requires JIT on both sides; subclass mirroring `ConveyorProximityStrategy`
+
+**Setup**: User specified "robot picks the cubes approaching the end of the conveyor" (proximity-order pick selection) AND "places onto matching colored markers, filling each row from +Y to -Y" (color-matched target assignment with deterministic fill order). Default `ColorMatchStrategy` iterates picks in spawn order: a freshly-spawned cube at the +Y feed point could be selected ahead of an older cube near the belt edge. `ConveyorProximityStrategy` does proximity-order target selection but assumes default sequential picking.
+
+**Root cause**: The two existing strategies are mirror images of each other on different axes:
+
+| Strategy                         | Pick selection          | Target assignment              |
+|----------------------------------|-------------------------|--------------------------------|
+| `ColorMatchStrategy`             | spawn-order iteration   | color-match, pre-paired at init |
+| `ConveyorProximityStrategy`      | spawn-order iteration   | JIT proximity, latched per place |
+| (what this task needs)           | **JIT proximity**       | **JIT color-match, latched**     |
+
+So neither off-the-shelf strategy fits. The new combined strategy subclasses `ColorMatchStrategy` (inheriting `_has_color`, `_color_palette`, base pairings bookkeeping) and adds two JIT layers, one on each side.
+
+**Fix**: `ColorMatchConveyorProximityStrategy` in `tasks/table_task_conveyor_color_rows.py`, ~110 lines. Key overrides:
+
+```python
+# Pick side
+def _proximity_key(self, pick_obj):
+    pos, _ = pick_obj.get_world_pose()
+    return -self.SIGN * float(pos[self.AXIS_IDX])  # smaller = closer to edge
+
+def get_current_pick_name(self):
+    if self._targets_exhausted: return None
+    if self._active_pick_name and self._pick_is_candidate(self._active_pick_name):
+        return self._active_pick_name
+    self._active_pick_name = self._select_next_pick()  # smallest-Y candidate
+    return self._active_pick_name
+
+def latch_current_pick(self, pick_name):
+    self._active_pick_name = pick_name  # cortex-tree post-grasp commit
+
+# Target side
+def _first_unused_matching_target(self, pick_name):
+    color = self._pick_color(pick_name)
+    for tgt in self._target_objs:  # target list pre-sorted +Y -> -Y per color
+        if self._has_color(tgt, color) and tgt.name not in occupied + latched_by_others:
+            if self.is_target_reachable(tgt.name):
+                return tgt.name
+
+def get_placing_target_name(self, pick_name):
+    if pick_name in self._completed_picks:
+        return self._pairings_by_pick_name.get(pick_name)
+    latched = self._latched_target_by_pick.get(pick_name)
+    if latched and still_valid(latched):
+        return latched
+    new_tgt = self._first_unused_matching_target(pick_name)
+    self._pairings_by_pick_name[pick_name] = new_tgt
+    return new_tgt
+
+def latch_current_target(self, pick_name):
+    tgt = self._pairings_by_pick_name.get(pick_name) or self._first_unused_matching_target(pick_name)
+    self._latched_target_by_pick[pick_name] = tgt
+
+# Incremental
+def add_incremental_picks(self, new_objs):
+    self._extend_pick_objs(new_objs)
+    for obj in new_objs:
+        if obj.name not in self._picking_order_item_names:
+            self._picking_order_item_names.append(obj.name)
+    self._targets_exhausted = False  # new picks may unblock
+```
+
+Combined with target list pre-sorted +Y → -Y within each color group, this gives:
+1. Each tick the proximity scan finds the smallest-Y cube → latched as `_active_pick_name`.
+2. When the cortex tree calls `LatchPlacementTarget`, the JIT assignment picks the first unused matching-color target from the pre-sorted list — which is always the +Y-most empty slot in that color's row.
+3. After mark_pick_complete, both latches are cleared; next cycle picks the new smallest-Y candidate.
+
+**Verification** (full-sim non-teleport, 25 s cap):
+- Pick 0: `cube_4` (spawned at Y=0.45, smallest of initial 5) → `target_10` (+Y-most blue slot — cube_4 was blue).
+- Pick 1: `cube_3` (Y=0.55, next-smallest) → `target_5` (+Y-most green slot — cube_3 was green).
+
+**Reusable check**: when a task needs JIT pick selection AND color-matched target assignment, the existing `ConveyorProximityStrategy` is a structural template — the same latch lifecycle, same `add_incremental_targets` (or `add_incremental_picks` for the pick side) pattern, just with the proximity scan applied to the opposite side from the original. Don't pre-pair in `initialize_pairings`; let `get_placing_target_name` JIT-assign from `_target_objs` order so the target-list ordering (which the task class controls) drives the fill semantics.
