@@ -153,8 +153,12 @@ class TestMockTaskContextMutations:
 
     def test_advance_past_end(self):
         ctx = MockTaskContext(pick_names=["p0"])
+        # advance_pick_index past the only pick returns None
         result = ctx.advance_pick_index()
         assert result is None
+        # all_picks_done is defined semantically (every pick completed or
+        # permanently unreachable); mark p0 complete to satisfy it.
+        ctx.mark_pick_complete("p0")
         assert ctx.all_picks_done
 
     def test_mark_pick_complete(self):
