@@ -409,6 +409,14 @@ class MultiPickStrategy:
     def get_current_pick_name(self) -> Optional[str]:
         if self._targets_exhausted:
             return None
+        # When every pick has been completed or flagged permanently
+        # unreachable, there is no "current pick" — return None even if
+        # the cursor still points at the last-returned (now-completed)
+        # pick.  Mirrors the historical "cursor walked off the end"
+        # behaviour without depending on cursor over-advancement during
+        # incremental-spawn idle ticks (see ``all_picks_done``).
+        if self.all_picks_done:
+            return None
         if self._current_pick_index >= len(self._picking_order_item_names):
             if self._stacking_map:
                 return self._scan_for_available_pick()
@@ -433,8 +441,14 @@ class MultiPickStrategy:
         permanently-unreachable *targets*.  When the tail of the list is
         all-deferred, falls through to ``_scan_for_available_pick`` so
         the second-chance pass can fire.
+
+        The cursor is only consumed when a candidate is actually returned;
+        repeated calls during the "waiting for incremental items" idle
+        period therefore do NOT race the cursor past
+        ``len(_picking_order_item_names)``.  This protects ``all_picks_done``
+        from a false-positive when an incremental scheduler adds the last
+        item after the BT has been idling for many ticks.
         """
-        self._current_pick_index += 1
         if self._stacking_map:
             # Always use scan (with wrap-around) when stacking is active —
             # the picking order may not align with source stacking constraints,
@@ -446,22 +460,23 @@ class MultiPickStrategy:
         # skip for unreachable targets if _try_retarget can find an
         # alternative — let CheckTargetAvailable handle that.
         n = len(self._picking_order_item_names)
-        while self._current_pick_index < n:
-            name = self._picking_order_item_names[self._current_pick_index]
+        idx = self._current_pick_index + 1
+        while idx < n:
+            name = self._picking_order_item_names[idx]
             if name in self._completed_picks:
-                self._current_pick_index += 1
+                idx += 1
                 continue
             if name in self._permanently_unreachable_picks:
                 logger.debug(
                     "advance_pick_index: skipping '%s' (permanently unreachable)", name,
                 )
-                self._current_pick_index += 1
+                idx += 1
                 continue
             if name in self._deferred_picks:
                 logger.debug(
                     "advance_pick_index: skipping '%s' (deferred this pass)", name,
                 )
-                self._current_pick_index += 1
+                idx += 1
                 continue
             tgt_name = self._pairings_by_pick_name.get(name)
             if tgt_name is not None and tgt_name in self._permanently_unreachable_targets:
@@ -472,20 +487,39 @@ class MultiPickStrategy:
                         "advance_pick_index: skipping '%s' (target permanently unreachable, "
                         "no alternative)", name,
                     )
-                    self._current_pick_index += 1
+                    idx += 1
                     continue
                 # Re-pairing possible — don't skip, let CheckTargetAvailable handle
+            self._current_pick_index = idx
             return name
         # Tail exhausted.  Preserve legacy no-wrap-around semantics in
         # the common case; fall through to the scan only when deferred
         # picks are present so the second-chance pass can fire.
+        # Note: we deliberately do NOT advance _current_pick_index past the
+        # last valid pick — see the docstring for why.
         if self._deferred_picks:
             return self._scan_for_available_pick()
         return None
 
     @property
     def all_picks_done(self) -> bool:
-        return self._current_pick_index >= len(self._picking_order_item_names)
+        """True when every pick in the order is completed or permanently unreachable.
+
+        Defined by set membership rather than cursor position so it stays
+        correct under (a) incremental growth of ``_picking_order_item_names``
+        via ``add_incremental_picks`` and (b) non-sequential pick selection
+        in JIT strategies that may complete picks out of cursor order.
+        """
+        names = self._picking_order_item_names
+        if not names:
+            return False
+        for name in names:
+            if name in self._completed_picks:
+                continue
+            if name in self._permanently_unreachable_picks:
+                continue
+            return False
+        return True
 
     @property
     def picking_order_item_names(self) -> List[str]:
