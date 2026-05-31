@@ -140,16 +140,29 @@ class UR10MultiPickPlaceController:
         When incremental generation is active (``more_items_expected``),
         exhaustion of current picks is not treated as done — more items
         will arrive and be added to the strategy.
+
+        Both terminal branches (``targets_exhausted`` and the
+        ``all_picks_done`` + no-more-expected combination) latch
+        ``context.task_finished`` to ``True`` before returning so that
+        readers of the context see a consistent "task complete" signal
+        regardless of whether the BT's ``SetTaskFinished`` ran or this
+        short-circuit fired first.  Important in real sim, where
+        ``multi_pickplace_task.pre_step`` exits as soon as ``is_done()``
+        is true and may not tick the BT again.
         """
         if self._task_context is not None:
             if self._task_context.task_finished:
                 return True
             if self._task_context.targets_exhausted:
+                self._task_context.task_finished = True
                 return True
             if self._task_context.all_picks_done:
                 # If more items are expected from incremental generation,
                 # don't report done — the strategy will grow.
-                return not self._task_context.strategy.more_items_expected
+                if not self._task_context.strategy.more_items_expected:
+                    self._task_context.task_finished = True
+                    return True
+                return False
         return self._tree_root.status == py_trees.common.Status.SUCCESS
 
     def reset(self, picking_order_item_names: Optional[List[str]] = None) -> None:
