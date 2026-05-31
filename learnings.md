@@ -170,16 +170,7 @@ Task: Pick colored cubes (3–5 of each of red/green/blue, randomly interleaved)
 
 **General rule**: Setting `TaskImplementationSpec.pick_min_reachable_z` has no effect under the default 9-phase tree (`make_task_controller_tree`) — only the cortex-style tree (`make_cortex_task_controller_tree`) wires up `CheckPickReachable` + `IsPickReachableGuard`, which mark items below the Z floor as `permanently_unreachable` and short-circuit the retry loop. For any conveyor task where unpicked items can drop off the edge, set `tree_factory=make_cortex_task_controller_tree` on the `TaskImplementationSpec`. The standard `MultiPickStrategy._permanently_unreachable_picks` set is honored by every existing strategy's pick-iteration logic, so the strategy automatically stops returning fallen items.
 
-### Issue 21: JIT-pick strategies that bump `_current_pick_index` every tick break `all_picks_done` for late incremental replenishment
-
-**Symptom**: With `SpatialTriggerConfig` replenishment + a custom strategy overriding `get_current_pick_name` / `advance_pick_index`, the task ended with one "phantom" missing pick — the very last replenishment cube was spawned, but the BT immediately reported "Task has finished" without ever processing it, and verification then reported the item not on its target.
-
-**General rule**: The UR10 controller's `is_done()` (in `ur10_multi_pick_place_controller.py`) checks `task_context.all_picks_done` — base class returns `_current_pick_index >= len(_picking_order_item_names)`. The 9-phase BT calls `advance_pick_index` every tick while `SelectNextPick` waits for incremental items (returning RUNNING), so a naive override that bumps `_current_pick_index` unconditionally drives it past the list size during the idle wait. When the last replenishment cube finally arrives and gets appended to `_picking_order_item_names`, the cursor is already past the new size — `all_picks_done` stays True — and `is_done()` fires before the BT can select the new cube. Two coupled overrides fix it cleanly:
-
-1. In `advance_pick_index`, only consume the cursor when a candidate actually exists (`if next_name is not None: self._current_pick_index += 1`).
-2. Override `all_picks_done` to use the semantically-correct definition: every name in `_picking_order_item_names` is either in `_completed_picks` or in `_permanently_unreachable_picks`. This removes the cursor entirely from the completion check and stays robust against incremental list growth.
-
-### Issue 22: Conveyor + color-matching wants pick-side proximity JIT and target-side color-match JIT — neither built-in strategy does both
+### Issue 21: Conveyor + color-matching wants pick-side proximity JIT and target-side color-match JIT — neither built-in strategy does both
 
 **Symptom**: When the user specified "robot picks the cubes approaching the end of the conveyor" + "places them onto matching-color markers, filling each row from +Y to -Y", default `ColorMatchStrategy` honored the colors but iterated picks in spawn order — so a freshly-replenished cube at the +Y feed point could be selected ahead of an older cube about to fall off. The mirror-image `ConveyorProximityStrategy` does proximity-based selection but on the *target* side and assumes a single sequential pairing.
 

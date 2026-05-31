@@ -487,55 +487,7 @@ The `pick_min_reachable_z=CONVEYOR_SURFACE_TOP_Z - 0.10` value matches the prece
 
 **Reusable check**: any task that uses `pick_spatial_trigger_config` or `pick_incremental_config` with `conveyor_speed != 0` must use the cortex tree — otherwise unpicked items that fall off the belt edge become an infinite-retry hazard. The `pick_min_reachable_z` field on `TaskImplementationSpec` is the standard knob; setting it without `tree_factory=make_cortex_task_controller_tree` is silently a no-op.
 
-### Issue 21 Details: JIT pick-selection breaks `all_picks_done` semantics when the cursor outruns the picking-order list
-
-**Setup**: `ColorMatchConveyorProximityStrategy` in `tasks/table_task_conveyor_color_rows.py` overrode `get_current_pick_name` and `advance_pick_index` to select picks dynamically by world-Y proximity rather than spawn order. With `SpatialTriggerConfig` replenishing 13 cubes total, the headless `--teleport` self-check completed 12 picks then immediately fired "Task finished" and verification reported the 13th cube (cube_12) "not on a valid target while 1 valid target(s) remain available".
-
-**Trace** (excerpt):
-```
-DEBUG MarkPickComplete: completed 'cube_11'      # 12th completed
-DEBUG SelectNextPick: waiting for more items...   # ~120 idle ticks
-DEBUG SpatialTriggeredItemScheduler: released 1 items (13/13) at t=19.433
-INFO  Incremental generation complete: all 13 pick objects spawned
-WARN  Task 'table_task_conveyor_color_rows' has finished.    # <-- BT ended here
-FAIL  Pick 'cube_12': not placed on any valid target
-```
-
-**Root cause**: `UR10MultiPickPlaceController.is_done()` returns True when `task_context.all_picks_done` is True AND `more_items_expected` is False. The base `MultiPickStrategy.all_picks_done` definition is `_current_pick_index >= len(_picking_order_item_names)`.
-
-The 9-phase tree's `SelectNextPick` calls `advance_pick_index()` on every tick after the first, regardless of whether a new pick was completed. During the ~120 idle ticks waiting for cube_12, the override's `self._current_pick_index += 1` ran once per tick, driving the cursor far past the list length (12 at that time).
-
-When cube_12 was finally spawned via `add_incremental_picks`, the override appended it to `_picking_order_item_names` (now length 13) — but the cursor was already at ~130. `all_picks_done` immediately returned True, the spawner's `all_picks_released = True` set `more_items_expected = False`, and `is_done()` fired in the *same* simulation step that cube_12 was added — before the BT could call `SelectNextPick` again.
-
-**Fix**: Two coupled overrides (final code in `tasks/table_task_conveyor_color_rows.py:130-180`):
-
-```python
-def advance_pick_index(self) -> Optional[str]:
-    self._active_pick_name = None
-    next_name = self.get_current_pick_name()
-    if next_name is not None:
-        self._current_pick_index += 1
-    return next_name
-
-@property
-def all_picks_done(self) -> bool:
-    names = self._picking_order_item_names
-    if not names:
-        return False
-    for name in names:
-        if name in self._completed_picks:
-            continue
-        if name in self._permanently_unreachable_picks:
-            continue
-        return False
-    return True
-```
-
-Now the cursor only increments when there is genuinely something to advance to, and the completion check is semantic (set membership) rather than positional. Both are necessary: just fixing the cursor without fixing `all_picks_done` would still leave a stale cursor from earlier "advance, then no candidate" cycles; just fixing `all_picks_done` without fixing the cursor would still leak the cursor past the list size and complicate any other code that reads `_current_pick_index`.
-
-**Reusable check**: any strategy that overrides `get_current_pick_name` / `advance_pick_index` for JIT pick selection should also override `all_picks_done` semantically. The base class's cursor-based check assumes the cursor moves through the list exactly once — JIT strategies don't preserve that invariant. The same applies to any strategy where `_picking_order_item_names` grows after initialization (incremental spawn + non-sequential pick order).
-
-### Issue 22 Details: ColorMatchStrategy + conveyor proximity requires JIT on both sides; subclass mirroring `ConveyorProximityStrategy`
+### Issue 21 Details: ColorMatchStrategy + conveyor proximity requires JIT on both sides; subclass mirroring `ConveyorProximityStrategy`
 
 **Setup**: User specified "robot picks the cubes approaching the end of the conveyor" (proximity-order pick selection) AND "places onto matching colored markers, filling each row from +Y to -Y" (color-matched target assignment with deterministic fill order). Default `ColorMatchStrategy` iterates picks in spawn order: a freshly-spawned cube at the +Y feed point could be selected ahead of an older cube near the belt edge. `ConveyorProximityStrategy` does proximity-order target selection but assumes default sequential picking.
 

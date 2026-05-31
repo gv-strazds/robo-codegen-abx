@@ -121,35 +121,11 @@ class ColorMatchConveyorProximityStrategy(ColorMatchStrategy):
         return self._active_pick_name
 
     def advance_pick_index(self) -> Optional[str]:
-        # Only consume the cursor slot when there's actually a candidate to
-        # advance to; otherwise the cursor outruns the picking-order list
-        # during "waiting for more items" ticks, which makes
-        # ``all_picks_done`` false-True before late replenishment items have
-        # been processed (see UR10 controller ``is_done``).
+        # Clear the JIT latch so get_current_pick_name re-scans from scratch.
+        # Cursor bookkeeping + completion semantics are handled by the
+        # base class.
         self._active_pick_name = None
-        next_name = self.get_current_pick_name()
-        if next_name is not None:
-            self._current_pick_index += 1
-        return next_name
-
-    @property
-    def all_picks_done(self) -> bool:
-        # Override the base class's index-based check with a semantic one:
-        # we're done when every name in the picking order is in the
-        # completed-picks set. Picks marked permanently unreachable are
-        # treated as "done" for completion purposes (they will never be
-        # placed). This stays robust against the cursor and against
-        # incremental additions to the picking-order list.
-        names = self._picking_order_item_names
-        if not names:
-            return False
-        for name in names:
-            if name in self._completed_picks:
-                continue
-            if name in self._permanently_unreachable_picks:
-                continue
-            return False
-        return True
+        return self.get_current_pick_name()
 
     # ---- target assignment: JIT, first-unused matching-color in list order ----
 
