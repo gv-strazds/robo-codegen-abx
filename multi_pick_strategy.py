@@ -509,17 +509,20 @@ class MultiPickStrategy:
         correct under (a) incremental growth of ``_picking_order_item_names``
         via ``add_incremental_picks`` and (b) non-sequential pick selection
         in JIT strategies that may complete picks out of cursor order.
+
+        Implemented as an O(1) cardinality check: ``mark_pick_complete`` and
+        ``mark_pick_permanently_unreachable`` are the only writers and only
+        accept names already in the picking order, so under the invariant
+        ``_completed_picks ∪ _permanently_unreachable_picks ⊆ set(names)``
+        the union's cardinality matches the (duplicate-free) picking-order
+        length iff every name is covered.  The empty-picking-order case
+        is vacuously True (``0 == 0``) — matches the historical positional
+        ``cursor=0 >= len=0`` semantic.
         """
-        names = self._picking_order_item_names
-        if not names:
-            return False
-        for name in names:
-            if name in self._completed_picks:
-                continue
-            if name in self._permanently_unreachable_picks:
-                continue
-            return False
-        return True
+        return (
+            len(self._completed_picks | self._permanently_unreachable_picks)
+            == len(self._picking_order_item_names)
+        )
 
     @property
     def picking_order_item_names(self) -> List[str]:

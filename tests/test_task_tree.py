@@ -244,9 +244,7 @@ class TestUR10MultiPickPlaceControllerIntegration:
             if ctrl.is_done():
                 break
         assert ctrl.is_done()
-        # task_finished is set only when the BT runs SetTaskFinished, which
-        # may be short-circuited by is_done()'s semantic all_picks_done check;
-        # the user-visible "task is complete" signal is ctrl.is_done().
+        assert ctx.task_finished
         assert ctx._completed_picks == {"p0", "p1"}
 
     def test_controller_reset(self):
