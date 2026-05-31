@@ -130,10 +130,12 @@ class TestUR10ControllerState:
         controller, ctx = _make_controller()
         assert not controller.is_done()
 
-        # Advance past all picks in the strategy
+        # all_picks_done is defined semantically (every pick completed or
+        # permanently unreachable); mark each pick complete to satisfy it.
         strategy = ctx._strategy
-        while not strategy.all_picks_done:
-            strategy.advance_pick_index()
+        for name in list(strategy.picking_order_item_names):
+            strategy.mark_pick_complete(name)
+        assert strategy.all_picks_done
         assert controller.is_done()
 
     def test_is_done_reflects_targets_exhausted(self):
